@@ -82,8 +82,8 @@ const createFilmsListTemplate = (filmsCount) => {
   let filmsListTemplate = ``;
   const filmCardTemplate = createFilmCardTemplate();
 
-  for (var i = 0; i < filmsCount; i++) {
-    filmsListTemplate = `${filmsListTemplate}${filmCardTemplate}`
+  for (let i = 0; i < filmsCount; i++) {
+    filmsListTemplate = `${filmsListTemplate}${filmCardTemplate}`;
   }
 
   return filmsListTemplate;
