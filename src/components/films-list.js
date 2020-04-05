@@ -1,13 +1,14 @@
 import {createFilmCardTemplate} from './film-card.js';
 
 const createFilmsListTemplate = ({type: listType, title: listTitle, count: filmsCount}) => {
-  const listClassName = getListClassName(listType);
-  const titleClassName = getTitleClassName(listType);
+  const isUpcoming = listType === `upcoming`;
+  const listClassName = getListClassName(isUpcoming);
+  const titleClassName = getTitleClassName(isUpcoming);
 
   const filmCardTemplate = createFilmCardTemplate();
   const filmsListTemplate = filmCardTemplate.repeat(filmsCount);
 
-  const showMoreButtonTemplate = getShowMoreButtonTemplate(listType);
+  const showMoreButtonTemplate = getShowMoreButtonTemplate(isUpcoming);
 
   return (
     `<section class="${listClassName}">
@@ -22,28 +23,28 @@ const createFilmsListTemplate = ({type: listType, title: listTitle, count: films
   );
 };
 
-const getListClassName = (type) => {
+const getListClassName = (isUpcomingList) => {
   const filmsListClassName = `films-list`;
 
-  if (type !== `extra`) {
+  if (isUpcomingList) {
     return filmsListClassName;
   }
 
   return `${filmsListClassName}--extra`;
 };
 
-const getTitleClassName = (type) => {
+const getTitleClassName = (isUpcomingList) => {
   const filmsTitleClassName = `films-list__title`;
 
-  if (type !== `upcoming`) {
+  if (!isUpcomingList) {
     return filmsTitleClassName;
   }
 
   return `${filmsTitleClassName} visually-hidden`;
 };
 
-const getShowMoreButtonTemplate = (type) => {
-  if (type !== `upcoming`) {
+const getShowMoreButtonTemplate = (isUpcomingList) => {
+  if (!isUpcomingList) {
     return ``;
   }
 
