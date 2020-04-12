@@ -45,7 +45,6 @@ const showingFilms = films.slice(0, showingFilmsCount);
 const ratedFilms = films.slice().sort((a, b) => b.rating - a.rating).slice(0, FILMS_RATED_COUNT);
 const commentedFilms = films.slice().sort((a, b) => b.comments.length - a.comments.length).slice(0, FILMS_COMMENTED_COUNT);
 
-
 const getFilmCardElement = (filmData) => {
   const cardTemplate = createFilmCardTemplate(filmData);
   const cardElement = createTemplateNode(cardTemplate);
