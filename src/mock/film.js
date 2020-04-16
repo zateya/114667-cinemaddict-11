@@ -178,4 +178,6 @@ const generateFilms = (count) => {
     .map(generateFilm);
 };
 
-export {generateFilms};
+const filmsStatistic = getRandomIntegerNumber(100000, 200000);
+
+export {generateFilms, filmsStatistic};

@@ -1,9 +1,34 @@
-const createFooterStatisticsTemplate = () => {
+import {createElement, formatIntegerWithSpaces} from '../utils.js';
+
+const createFooterStatisticsTemplate = (count) => {
+  const formatedCount = formatIntegerWithSpaces(count);
+
   return (
     `<section class="footer__statistics">
-      <p>130 291 movies inside</p>
+      <p>${formatedCount} movies inside</p>
     </section>`
   );
 };
 
-export {createFooterStatisticsTemplate};
+export default class FooterStatistics {
+  constructor(count) {
+    this._count = count;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFooterStatisticsTemplate(this._count);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

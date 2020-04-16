@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 const createFilmsListTemplate = (list) => {
   const {type, title} = list;
   const isAllList = type === `all`;
@@ -14,4 +16,25 @@ const createFilmsListTemplate = (list) => {
   );
 };
 
-export {createFilmsListTemplate};
+export default class FilmsList {
+  constructor(list) {
+    this._list = list;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmsListTemplate(this._list);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
