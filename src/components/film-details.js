@@ -81,7 +81,6 @@ const createFilmDetailsTemplate = (film) => {
                 </div>
               </div>
 
-              <!-- похоже на Map, но не придумала как организовать структуру -->
               <table class="film-details__table">
                 ${createDetailsMarkup(details)}
               </table>
