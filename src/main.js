@@ -10,7 +10,7 @@ import FooterStatisticsComponent from './components/footer-statistics.js';
 import {render, RenderPosition} from './utils.js';
 import {filmLists} from './const.js';
 import {generateMenuItems} from './mock/menu.js';
-import {generateFilms, filmsStatistic} from './mock/film.js';
+import {generateFilms, statisticFilmsCount} from './mock/film.js';
 
 const FILMS_COUNT = 20;
 const FILMS_RATED_COUNT = 2;
@@ -93,5 +93,5 @@ const filmsComponent = new FilmsComponent();
 render(siteMainElement, filmsComponent.getElement(), RenderPosition.BEFOREEND);
 renderFilms(filmsComponent, films);
 
-render(siteFooterElement, new FooterStatisticsComponent(filmsStatistic).getElement(), RenderPosition.BEFOREEND);
+render(siteFooterElement, new FooterStatisticsComponent(statisticFilmsCount).getElement(), RenderPosition.BEFOREEND);
 
