@@ -35,11 +35,13 @@ const renderFilmCard = (filmCardContainerElement, film) => {
 
   const showFilmDetails = () => {
     bodyElement.appendChild(filmDetailsElement);
+    bodyElement.classList.add(`hide-overflow`);
   };
 
   const hideFilmDetails = () => {
     bodyElement.removeChild(filmDetailsElement);
     filmDetailsComponent.removeElement();
+    bodyElement.classList.remove(`hide-overflow`);
   };
 
   filmCardPosterElement.addEventListener(`click`, showFilmDetails);
