@@ -40,7 +40,6 @@ const renderFilmCard = (filmCardContainerElement, film) => {
 
   const hideFilmDetails = () => {
     bodyElement.removeChild(filmDetailsElement);
-    filmDetailsComponent.removeElement();
     bodyElement.classList.remove(`hide-overflow`);
   };
 
