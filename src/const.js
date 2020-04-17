@@ -32,7 +32,7 @@ export const genres = [
   `Film-Noir`
 ];
 
-export const filmLists = [
+export const FILM_LISTS = [
   {
     type: `all`,
     title: `All movies. Upcoming`
