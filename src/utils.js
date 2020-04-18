@@ -1,12 +1,24 @@
-export const render = (container, template, place = `beforeend`) => {
-  container.insertAdjacentHTML(place, template);
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
 };
 
-export const createTemplateNode = (template) => {
-  const element = document.createElement(`div`);
-  render(element, template);
+export const render = (container, element, place = RenderPosition.BEFOREEND) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
 
-  return element.firstChild;
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
 };
 
 export const getShortText = (text, maxLength) => {
@@ -36,4 +48,8 @@ export const formatDate = (date) => {
   const minutes = castDateTimeFormat(date.getMinutes());
 
   return `${year}/${month}/${day} ${hours}:${minutes}`;
+};
+
+export const formatIntegerWithSpaces = (num) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ` `);
 };

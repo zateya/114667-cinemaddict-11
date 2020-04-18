@@ -1,16 +1,16 @@
-import {createHeaderProfileTemplate} from './components/header-profile.js';
-import {createSiteMenuTemplate} from './components/site-menu.js';
-import {createSortTemplate} from './components/sorting.js';
-import {createFilmsTemplate} from './components/films.js';
-import {createFilmCardTemplate} from './components/film-card.js';
-import {createFilmsListTemplate} from './components/films-list.js';
-import {createShowMoreButtonTemplate} from './components/show-more-button.js';
-import {createFooterStatisticsTemplate} from './components/footer-statistics.js';
-import {createFilmDetailsTemplate} from './components/film-details.js';
-import {render, createTemplateNode} from './utils.js';
-import {filmLists} from './const.js';
+import HeaderProfileComponent from './components/header-profile.js';
+import SiteMenuComponent from './components/site-menu.js';
+import SortComponent from './components/sort.js';
+import FilmsComponent from './components/films.js';
+import FilmsListComponent from './components/films-list.js';
+import FilmCardComponent from './components/film-card.js';
+import FilmDetailsComponent from './components/film-details.js';
+import ShowMoreButtonComponent from './components/show-more-button.js';
+import FooterStatisticsComponent from './components/footer-statistics.js';
+import {render} from './utils.js';
+import {FILM_LISTS} from './const.js';
 import {generateMenuItems} from './mock/menu.js';
-import {generateFilms} from './mock/film.js';
+import {generateFilms, statisticFilmsCount} from './mock/film.js';
 
 const FILMS_COUNT = 20;
 const FILMS_RATED_COUNT = 2;
@@ -18,79 +18,91 @@ const FILMS_COMMENTED_COUNT = 2;
 const SHOWING_FILMS_COUNT_ON_START = 5;
 const SHOWING_FILMS_COUNT_BY_BUTTON = 5;
 
-const siteHeaderElement = document.querySelector(`.header`);
-const siteMainElement = document.querySelector(`.main`);
-const siteFooterElement = document.querySelector(`.footer`);
+const bodyElement = document.body;
+const siteHeaderElement = bodyElement.querySelector(`.header`);
+const siteMainElement = bodyElement.querySelector(`.main`);
+const siteFooterElement = bodyElement.querySelector(`.footer`);
 
-render(siteHeaderElement, createHeaderProfileTemplate());
+const renderFilmCard = (filmCardContainerElement, film) => {
+  const filmCardElement = new FilmCardComponent(film).getElement();
+  const filmCardPosterElement = filmCardElement.querySelector(`.film-card__poster`);
+  const filmCardTitleElement = filmCardElement.querySelector(`.film-card__title`);
+  const filmCardCommentsElement = filmCardElement.querySelector(`.film-card__comments`);
 
-const menuItems = generateMenuItems();
-render(siteMainElement, createSiteMenuTemplate(menuItems));
+  const filmDetailsComponent = new FilmDetailsComponent(film);
+  const filmDetailsElement = filmDetailsComponent.getElement();
+  const filmDetailsCloseButtonElement = filmDetailsElement.querySelector(`.film-details__close-btn`);
 
-render(siteMainElement, createSortTemplate());
+  const showFilmDetails = () => {
+    bodyElement.appendChild(filmDetailsElement);
+    bodyElement.classList.add(`hide-overflow`);
+  };
 
-render(siteMainElement, createFilmsTemplate());
-const filmsElement = siteMainElement.querySelector(`.films`);
+  const hideFilmDetails = () => {
+    bodyElement.removeChild(filmDetailsElement);
+    bodyElement.classList.remove(`hide-overflow`);
+  };
 
-filmLists.map((it) => render(filmsElement, createFilmsListTemplate(it)));
+  filmCardPosterElement.addEventListener(`click`, showFilmDetails);
+  filmCardTitleElement.addEventListener(`click`, showFilmDetails);
+  filmCardCommentsElement.addEventListener(`click`, showFilmDetails);
 
-const filmsListElement = filmsElement.querySelector(`.films-list`);
-const filmsContainer = filmsListElement.querySelector(`.films-list__container`);
-const ratedFilmsContainer = filmsElement.querySelector(`.films-list--extra .films-list__container`);
-const commentedFilmsContainer = filmsElement.querySelector(`.films-list--extra:last-of-type .films-list__container`);
+  filmDetailsCloseButtonElement.addEventListener(`click`, hideFilmDetails);
+
+  render(filmCardContainerElement, filmCardElement);
+};
+
+const renderFilms = (filmsComponent, films) => {
+  let showingFilmsCount = SHOWING_FILMS_COUNT_ON_START;
+  const showingFilms = films.slice(0, showingFilmsCount);
+  const ratedFilms = films.slice().sort((a, b) => b.rating - a.rating).slice(0, FILMS_RATED_COUNT);
+  const commentedFilms = films.slice().sort((a, b) => b.comments.length - a.comments.length).slice(0, FILMS_COMMENTED_COUNT);
+  const filmsElement = filmsComponent.getElement();
+
+  const renderFilmList = (listData, listFilms) => {
+    const filmListElement = new FilmsListComponent(listData).getElement();
+    render(filmsElement, filmListElement);
+    const filmCardContainerElement = filmListElement.querySelector(`.films-list__container`);
+    listFilms.forEach((film) => renderFilmCard(filmCardContainerElement, film));
+
+    const isMoreButtonShown = listData.type === `all` && showingFilmsCount < FILMS_COUNT;
+
+    if (isMoreButtonShown) {
+      const showMoreButtonComponent = new ShowMoreButtonComponent();
+      const showMoreButtonElement = showMoreButtonComponent.getElement();
+      render(filmListElement, showMoreButtonElement);
+
+      showMoreButtonElement.addEventListener(`click`, () => {
+        const prevFilmsCount = showingFilmsCount;
+        showingFilmsCount += SHOWING_FILMS_COUNT_BY_BUTTON;
+
+        films.slice(prevFilmsCount, showingFilmsCount)
+          .forEach((film) => renderFilmCard(filmCardContainerElement, film));
+
+        if (showingFilmsCount >= films.length) {
+          showMoreButtonElement.remove();
+          showMoreButtonComponent.removeElement();
+        }
+      });
+    }
+  };
+
+  const filmListsToRender = [showingFilms, ratedFilms, commentedFilms];
+  FILM_LISTS.map((it, index) => renderFilmList(it, filmListsToRender[index]));
+};
 
 const films = generateFilms(FILMS_COUNT);
-let showingFilmsCount = SHOWING_FILMS_COUNT_ON_START;
-const showingFilms = films.slice(0, showingFilmsCount);
-const ratedFilms = films.slice().sort((a, b) => b.rating - a.rating).slice(0, FILMS_RATED_COUNT);
-const commentedFilms = films.slice().sort((a, b) => b.comments.length - a.comments.length).slice(0, FILMS_COMMENTED_COUNT);
 
-const getFilmCardElement = (filmData) => {
-  const cardTemplate = createFilmCardTemplate(filmData);
-  const cardElement = createTemplateNode(cardTemplate);
+render(siteHeaderElement, new HeaderProfileComponent().getElement());
 
-  cardElement.addEventListener(`click`, () => {
-    const filmDetailsTemplate = createFilmDetailsTemplate(filmData);
-    const filmDetailsElement = createTemplateNode(filmDetailsTemplate);
-    document.body.appendChild(filmDetailsElement);
-    const filmDetailsCloseButton = filmDetailsElement.querySelector(`.film-details__close-btn`);
+const menuItems = generateMenuItems();
+render(siteMainElement, new SiteMenuComponent(menuItems).getElement());
 
-    filmDetailsCloseButton.addEventListener(`click`, () => filmDetailsElement.remove());
-  });
+render(siteMainElement, new SortComponent().getElement());
 
-  return cardElement;
-};
+const filmsComponent = new FilmsComponent();
+render(siteMainElement, filmsComponent.getElement());
+renderFilms(filmsComponent, films);
 
-const renderFilms = (container, filmsData) => {
-  filmsData.forEach((filmData) => {
-    const filmCard = getFilmCardElement(filmData);
-    container.appendChild(filmCard);
-  });
-};
-
-renderFilms(filmsContainer, showingFilms);
-renderFilms(ratedFilmsContainer, ratedFilms);
-renderFilms(commentedFilmsContainer, commentedFilms);
-
-if (showingFilmsCount < FILMS_COUNT) {
-  render(filmsListElement, createShowMoreButtonTemplate());
-  const showMoreButton = filmsListElement.querySelector(`.films-list__show-more`);
-
-  showMoreButton.addEventListener(`click`, () => {
-    const prevFilmsCount = showingFilmsCount;
-    showingFilmsCount += SHOWING_FILMS_COUNT_BY_BUTTON;
-
-    films.slice(prevFilmsCount, showingFilmsCount)
-      .forEach((filmData) => {
-        const filmCard = getFilmCardElement(filmData);
-        filmsContainer.appendChild(filmCard);
-      });
-
-    if (showingFilmsCount >= films.length) {
-      showMoreButton.remove();
-    }
-  });
-}
-
-render(siteFooterElement, createFooterStatisticsTemplate());
+render(siteFooterElement, new FooterStatisticsComponent(statisticFilmsCount).getElement());
 
