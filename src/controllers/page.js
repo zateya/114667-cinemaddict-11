@@ -4,12 +4,7 @@ import FilmCardComponent from '../components/film-card.js';
 import FilmDetailsComponent from '../components/film-details.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
 import {render, remove} from '../utils/render.js';
-import {FILM_LISTS} from '../const.js';
-
-const SHOWING_FILMS_COUNT_ON_START = 5;
-const SHOWING_FILMS_COUNT_BY_BUTTON = 5;
-const FILMS_RATED_COUNT = 2;
-const FILMS_COMMENTED_COUNT = 2;
+import {SHOWING_FILMS_COUNT_ON_START, SHOWING_FILMS_COUNT_BY_BUTTON, FILMS_RATED_COUNT, FILMS_COMMENTED_COUNT, FILM_LISTS} from '../constant.js';
 
 const renderFilmCard = (filmsListContainerElement, film) => {
   const bodyElement = document.body;
@@ -112,6 +107,6 @@ export default class PageController {
     const commentedFilms = films.slice().sort((a, b) => b.comments.length - a.comments.length).slice(0, FILMS_COMMENTED_COUNT);
 
     const filmListsToRender = [showingFilms, ratedFilms, commentedFilms];
-    FILM_LISTS.map((it, index) => renderFilmList(it, filmListsToRender[index]));
+    FILM_LISTS.map((it, i) => renderFilmList(it, filmListsToRender[i]));
   }
 }

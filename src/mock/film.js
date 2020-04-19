@@ -1,4 +1,4 @@
-import {emojies, genres} from '../const.js';
+import {emojies, genres} from '../constant.js';
 import {formatDuration} from '../utils/common.js';
 
 const filmNames = [

@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract-component.js';
-import {MONTH_NAMES, emojies} from '../const.js';
+import {MONTH_NAMES, emojies, POSTER_PATH, EMOJI_PATH} from '../constant.js';
 import {formatDate} from '../utils/common.js';
 
 const createCommentMarkup = (comment) => {
@@ -9,7 +9,7 @@ const createCommentMarkup = (comment) => {
   return (
     `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
+        <img src="./${EMOJI_PATH}/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
       </span>
       <div>
         <p class="film-details__comment-text">${message}</p>
@@ -37,7 +37,7 @@ const createDetailsMarkup = (details) => details.map(([key, value]) => (
 const createEmojiListMarkup = () => emojies.map((emoji) => (
   `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
   <label class="film-details__emoji-label" for="emoji-${emoji}">
-    <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji">
+    <img src="./${EMOJI_PATH}/${emoji}.png" width="30" height="30" alt="emoji">
   </label>`
 )).join(`\n`);
 
@@ -65,7 +65,7 @@ const createFilmDetailsTemplate = (film) => {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+              <img class="film-details__poster-img" src="./${POSTER_PATH}/${poster}" alt="">
 
               <p class="film-details__age">${age}</p>
             </div>

@@ -4,8 +4,11 @@ const createFilmsListTemplate = (list) => {
   const {type, title} = list;
   const isAllList = type === `all`;
 
-  const listClass = (isAllList) ? `films-list` : `films-list--${type}`;
-  const titleClass = (isAllList) ? `films-list__title visually-hidden` : `films-list__title`;
+  const listDefaultClass = `films-list`;
+  const listClass = (isAllList) ? listDefaultClass : `${listDefaultClass}--${type}`;
+
+  const titleDefaultClass = `films-list__title`;
+  const titleClass = (isAllList) ? `${titleDefaultClass} visually-hidden` : titleDefaultClass;
 
   return (
     `<section class="${listClass}">

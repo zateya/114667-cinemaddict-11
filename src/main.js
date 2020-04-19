@@ -7,8 +7,7 @@ import FooterStatisticsComponent from './components/footer-statistics.js';
 import {render} from './utils/render.js';
 import {generateMenuItems} from './mock/menu.js';
 import {generateFilms, statisticFilmsCount} from './mock/film.js';
-
-const FILMS_COUNT = 20;
+import {FILMS_COUNT} from './constant.js';
 
 const siteHeaderElement = document.querySelector(`.header`);
 const siteMainElement = document.querySelector(`.main`);
