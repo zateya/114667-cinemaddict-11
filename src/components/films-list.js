@@ -1,11 +1,14 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const createFilmsListTemplate = (list) => {
   const {type, title} = list;
   const isAllList = type === `all`;
 
-  const listClass = (isAllList) ? `films-list` : `films-list--${type}`;
-  const titleClass = (isAllList) ? `films-list__title visually-hidden` : `films-list__title`;
+  const listDefaultClass = `films-list`;
+  const listClass = (isAllList) ? listDefaultClass : `${listDefaultClass}--${type}`;
+
+  const titleDefaultClass = `films-list__title`;
+  const titleClass = (isAllList) ? `${titleDefaultClass} visually-hidden` : titleDefaultClass;
 
   return (
     `<section class="${listClass}">
@@ -16,25 +19,14 @@ const createFilmsListTemplate = (list) => {
   );
 };
 
-export default class FilmsList {
+export default class FilmsList extends AbstractComponent {
   constructor(list) {
+    super();
+
     this._list = list;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmsListTemplate(this._list);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

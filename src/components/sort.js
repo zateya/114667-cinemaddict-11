@@ -1,33 +1,24 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
+import {SortType} from '../constant.js';
+
+const createSortItemMarkup = (sortType, isActive) => {
+  const activeClass = isActive ? `sort__button--active` : ``;
+
+  return `<li><a href="#" class="sort__button ${activeClass}">Sort by ${sortType}</a></li>`;
+};
 
 const createSortTemplate = () => {
+  const sortItemsMarkup = Object.values(SortType).map((it, i) => createSortItemMarkup(it, i === 0)).join(`\n`);
+
   return (
     `<ul class="sort">
-      <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-      <li><a href="#" class="sort__button">Sort by date</a></li>
-      <li><a href="#" class="sort__button">Sort by rating</a></li>
+      ${sortItemsMarkup}
     </ul>`
   );
 };
 
-export default class Sort {
-  constructor() {
-    this._element = null;
-  }
-
+export default class Sort extends AbstractComponent {
   getTemplate() {
     return createSortTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

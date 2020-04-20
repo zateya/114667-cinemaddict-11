@@ -1,5 +1,5 @@
-import {emojies, genres} from '../const.js';
-import {formatDuration} from '../utils.js';
+import {emojies, genres} from '../constant.js';
+import {formatDuration} from '../utils/common.js';
 
 const filmNames = [
   `The Dance of Life`,

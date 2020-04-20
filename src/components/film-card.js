@@ -1,5 +1,6 @@
-import {SHORT_DESCRIPTION_LENGTH} from '../const.js';
-import {getShortText, createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
+import {SHORT_DESCRIPTION_LENGTH, POSTER_PATH} from '../constant.js';
+import {getShortText} from '../utils/common.js';
 
 const createFilmCardTemplate = (film) => {
   const {title, poster, genres, rating, description, comments, release, duration, isWatchList, isWatched, isFavorite} = film;
@@ -20,7 +21,7 @@ const createFilmCardTemplate = (film) => {
         <span class="film-card__duration">${duration}</span>
         <span class="film-card__genre">${genres[0]}</span>
       </p>
-      <img src="./images/posters/${poster}" alt="" class="film-card__poster">
+      <img src="./${POSTER_PATH}/${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${shortDescription}</p>
       <a class="film-card__comments">${commentsCount} ${commentsCount === 1 ? `comment` : `comments`}</a>
       <form class="film-card__controls">
@@ -32,25 +33,20 @@ const createFilmCardTemplate = (film) => {
   );
 };
 
-export default class FilmCard {
+export default class FilmCard extends AbstractComponent {
   constructor(film) {
+    super();
+
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, handler);
+    this.getElement().querySelector(`.film-card__title`).addEventListener(`click`, handler);
+    this.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, handler);
   }
 }
