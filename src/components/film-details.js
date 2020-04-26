@@ -41,15 +41,17 @@ const createDetailsMarkup = (details) => details.map(([key, value]) => (
   </tr>`
 )).join(`\n`);
 
+const createEmojiListMarkup = (currentEmoji) => emojies.list.map((emoji) => {
+  const checkedValue = emoji === currentEmoji ? `checked` : ``;
+  return (
+    `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}" ${checkedValue}>
+    <label class="film-details__emoji-label" for="emoji-${emoji}">
+      ${createEmojiImageMarkup(emoji, emojies.sizes.small)}
+    </label>`
+  );
+}).join(`\n`);
 
-const createEmojiListMarkup = () => emojies.list.map((emoji) => (
-  `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
-  <label class="film-details__emoji-label" for="emoji-${emoji}">
-    ${createEmojiImageMarkup(emoji, emojies.sizes.small)}
-  </label>`
-)).join(`\n`);
-
-const createFilmDetailsTemplate = (film, emoji) => {
+const createFilmDetailsTemplate = (film, currentEmoji) => {
   const {title, originalTitle, poster, country, genres, rating, director, writers, actors, description, comments, release, duration, isWatchList, isWatched, isFavorite, age} = film;
   const commentsCount = comments.length;
   const releaseDate = `${release.getDate()} ${MONTH_NAMES[release.getMonth()]} ${release.getFullYear()}`;
@@ -64,7 +66,7 @@ const createFilmDetailsTemplate = (film, emoji) => {
     [`Genres`, createGenresMarkup(genres)]
   ];
 
-  const emojiImageMarkup = emoji ? createEmojiImageMarkup(emoji, emojies.sizes.big) : ``;
+  const emojiImageMarkup = currentEmoji ? createEmojiImageMarkup(currentEmoji, emojies.sizes.big) : ``;
 
   return (
     `<section class="film-details">
@@ -130,7 +132,7 @@ const createFilmDetailsTemplate = (film, emoji) => {
               </label>
 
               <div class="film-details__emoji-list">
-                ${createEmojiListMarkup()}
+                ${createEmojiListMarkup(currentEmoji)}
               </div>
             </div>
           </section>
