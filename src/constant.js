@@ -1,3 +1,5 @@
+export const ESCAPE_KEY_CODE = 27;
+
 export const FILMS_COUNT = 20;
 export const SHOWING_FILMS_COUNT_ON_START = 5;
 export const SHOWING_FILMS_COUNT_BY_BUTTON = 5;
@@ -42,23 +44,30 @@ export const genres = [
   `Film-Noir`
 ];
 
-export const FILM_LISTS = [
-  {
+export const filmLists = {
+  all: {
     type: `all`,
     title: `All movies. Upcoming`
   },
-  {
+  rated: {
     type: `extra`,
     title: `Top rated`
   },
-  {
+  commented: {
     type: `extra`,
     title: `Most commented`
   }
-];
+};
 
 export const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
-  RATING: `rating`
+  RATING: `rating`,
+  COMMENTS_COUNT: `comments`
 };
+
+export const sortTypes = [
+  `default`,
+  `date`,
+  `rating`
+];

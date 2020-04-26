@@ -1,6 +1,5 @@
 import HeaderProfileComponent from './components/header-profile.js';
 import SiteMenuComponent from './components/site-menu.js';
-import SortComponent from './components/sort.js';
 import FilmsComponent from './components/films.js';
 import PageController from './controllers/page.js';
 import FooterStatisticsComponent from './components/footer-statistics.js';
@@ -19,8 +18,6 @@ render(siteHeaderElement, new HeaderProfileComponent());
 
 const menuItems = generateMenuItems();
 render(siteMainElement, new SiteMenuComponent(menuItems));
-
-render(siteMainElement, new SortComponent());
 
 const filmsComponent = new FilmsComponent();
 const pageController = new PageController(filmsComponent);

@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from "./abstract-smart-component.js";
 import {MONTH_NAMES, emojies, POSTER_PATH, EMOJI_PATH} from '../constant.js';
 import {formatDate} from '../utils/common.js';
 
@@ -128,11 +128,17 @@ const createFilmDetailsTemplate = (film) => {
   );
 };
 
-export default class FilmDetails extends AbstractComponent {
+export default class FilmDetails extends AbstractSmartComponent {
   constructor(film) {
     super();
 
     this._film = film;
+    this._closeButtonClickHandler = null;
+    this._watchListInputChangeHandler = null;
+    this._watchedInputChangeHandler = null;
+    this._favoriteInputChangeHandler = null;
+
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
@@ -141,5 +147,46 @@ export default class FilmDetails extends AbstractComponent {
 
   setCloseButtonClickHandler(handler) {
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
+
+    this._closeButtonClickHandler = handler;
+  }
+
+  setWatchListInputChangeHadler(handler) {
+    this.getElement().querySelector(`#watchlist`).addEventListener(`change`, handler);
+
+    this._watchListInputChangeHandler = handler;
+  }
+
+  setWatchedInputChangeHadler(handler) {
+    this.getElement().querySelector(`#watched`).addEventListener(`change`, handler);
+
+    this._watchedInputChangeHandler = handler;
+  }
+
+  setFavoriteInputChangeHadler(handler) {
+    this.getElement().querySelector(`#favorite`).addEventListener(`change`, handler);
+
+    this._favoriteInputChangeHandler = handler;
+  }
+
+  recoveryListeners() {
+    this.setCloseButtonClickHandler(this._closeButtonClickHandler);
+    this.setWatchListInputChangeHadler(this._watchListInputChangeHandler);
+    this.setWatchedInputChangeHadler(this._watchedInputChangeHandler);
+    this.setFavoriteInputChangeHadler(this._favoriteInputChangeHandler);
+    this._subscribeOnEvents();
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    const emojiElements = Array.from(element.querySelectorAll(`.film-details__emoji-item`));
+
+    emojiElements.forEach((emojiElement) => {
+      emojiElement.addEventListener(`change`, (evt) => {
+        const currentEmoji = evt.target.value;
+        element.querySelector(`.film-details__add-emoji-label`).style = `background: url(./${EMOJI_PATH}/${currentEmoji}.png) no-repeat center / contain`;
+      });
+    });
   }
 }
