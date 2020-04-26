@@ -77,6 +77,10 @@ export default class FilmController {
     }
   }
 
+  get filmCardComponent() {
+    return this._filmCardComponent;
+  }
+
   _addFilmToWatchList() {
     this._onDataChange(this._film, Object.assign({}, this._film, {
       isWatchList: !this._film.isWatchList,
