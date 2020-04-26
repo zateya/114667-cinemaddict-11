@@ -77,8 +77,8 @@ export default class FilmController {
     }
   }
 
-  get filmCardComponent() {
-    return this._filmCardComponent;
+  getFilm() {
+    return this._film;
   }
 
   _addFilmToWatchList() {
