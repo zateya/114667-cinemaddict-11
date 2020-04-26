@@ -25,14 +25,20 @@ export const MONTH_NAMES = [
   `December`,
 ];
 
-export const emojies = [
-  `angry`,
-  `puke`,
-  `sleeping`,
-  `smile`,
-];
-
-export const EMOJI_PATH = `images/emoji`;
+export const emojies = {
+  list: [
+    `angry`,
+    `puke`,
+    `sleeping`,
+    `smile`,
+  ],
+  path: `images/emoji`,
+  extension: `png`,
+  sizes: {
+    big: [55, 55],
+    small: [30, 30]
+  }
+};
 
 export const genres = [
   `Musical`,

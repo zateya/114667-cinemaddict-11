@@ -7,7 +7,7 @@ const bodyElement = document.body;
 
 const Mode = {
   DEFAULT: `default`,
-  EDIT: `edit`,
+  POPUP: `popup`,
 };
 
 export default class FilmController {
@@ -109,7 +109,7 @@ export default class FilmController {
     this._onViewChange();
     bodyElement.appendChild(this._filmDetailsComponent.getElement());
     bodyElement.classList.add(`hide-overflow`);
-    this._mode = Mode.EDIT;
+    this._mode = Mode.POPOP;
   }
 
   _hideFilmDetails() {

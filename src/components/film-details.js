@@ -1,15 +1,22 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {MONTH_NAMES, emojies, POSTER_PATH, EMOJI_PATH} from '../constant.js';
+import {MONTH_NAMES, emojies, POSTER_PATH} from '../constant.js';
 import {formatDate} from '../utils/common.js';
+
+const createEmojiImageMarkup = (emoji, size) => {
+  const [width, height] = size;
+  return `<img src="./${emojies.path}/${emoji}.${emojies.extension}" width="${width}" height="${height}" alt="emoji-${emoji}">`;
+};
 
 const createCommentMarkup = (comment) => {
   const {author, date, message, emoji} = comment;
   const formatedDate = formatDate(date);
 
+  const emojiImageMarkup = createEmojiImageMarkup(emoji, emojies.sizes.big);
+
   return (
     `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
-        <img src="./${EMOJI_PATH}/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
+        ${emojiImageMarkup}
       </span>
       <div>
         <p class="film-details__comment-text">${message}</p>
@@ -34,14 +41,19 @@ const createDetailsMarkup = (details) => details.map(([key, value]) => (
   </tr>`
 )).join(`\n`);
 
-const createEmojiListMarkup = () => emojies.map((emoji) => (
+
+const createEmojiListMarkup = () => emojies.list.map((emoji) => (
   `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
   <label class="film-details__emoji-label" for="emoji-${emoji}">
-    <img src="./${EMOJI_PATH}/${emoji}.png" width="30" height="30" alt="emoji">
+    ${createEmojiImageMarkup(emoji, emojies.sizes.small)}
   </label>`
 )).join(`\n`);
 
-const createFilmDetailsTemplate = (film) => {
+const createEmojiMarkup = (emoji) => {
+  return emoji ? createEmojiImageMarkup(emoji, emojies.sizes.big) : ``;
+};
+
+const createFilmDetailsTemplate = (film, emoji) => {
   const {title, originalTitle, poster, country, genres, rating, director, writers, actors, description, comments, release, duration, isWatchList, isWatched, isFavorite, age} = film;
   const commentsCount = comments.length;
   const releaseDate = `${release.getDate()} ${MONTH_NAMES[release.getMonth()]} ${release.getFullYear()}`;
@@ -55,6 +67,8 @@ const createFilmDetailsTemplate = (film) => {
     [`Country`, country],
     [`Genres`, createGenresMarkup(genres)]
   ];
+
+  const emojiMarkup = createEmojiMarkup(emoji);
 
   return (
     `<section class="film-details">
@@ -111,7 +125,9 @@ const createFilmDetailsTemplate = (film) => {
             ${commentsCount > 0 ? `<ul class="film-details__comments-list">${createCommentsListMarkup(comments)}</ul>` : ``}
 
             <div class="film-details__new-comment">
-              <div for="add-emoji" class="film-details__add-emoji-label"></div>
+              <div for="add-emoji" class="film-details__add-emoji-label">
+                ${emojiMarkup}
+              </div>
 
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -133,6 +149,7 @@ export default class FilmDetails extends AbstractSmartComponent {
     super();
 
     this._film = film;
+    this._emoji = null;
     this._closeButtonClickHandler = null;
     this._watchListInputChangeHandler = null;
     this._watchedInputChangeHandler = null;
@@ -142,7 +159,7 @@ export default class FilmDetails extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film);
+    return createFilmDetailsTemplate(this._film, this._emoji);
   }
 
   setCloseButtonClickHandler(handler) {
@@ -184,8 +201,8 @@ export default class FilmDetails extends AbstractSmartComponent {
 
     emojiElements.forEach((emojiElement) => {
       emojiElement.addEventListener(`change`, (evt) => {
-        const currentEmoji = evt.target.value;
-        element.querySelector(`.film-details__add-emoji-label`).style = `background: url(./${EMOJI_PATH}/${currentEmoji}.png) no-repeat center / contain`;
+        this._emoji = evt.target.value;
+        this.rerender();
       });
     });
   }

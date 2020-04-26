@@ -135,7 +135,7 @@ const getComment = () => {
     author: getRandomArrayItem(authors),
     date: getRandomDate(),
     message: getRandomArrayItem(comments),
-    emoji: getRandomArrayItem(emojies),
+    emoji: getRandomArrayItem(emojies.list),
   };
 };
 
