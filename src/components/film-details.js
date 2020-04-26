@@ -49,10 +49,6 @@ const createEmojiListMarkup = () => emojies.list.map((emoji) => (
   </label>`
 )).join(`\n`);
 
-const createEmojiMarkup = (emoji) => {
-  return emoji ? createEmojiImageMarkup(emoji, emojies.sizes.big) : ``;
-};
-
 const createFilmDetailsTemplate = (film, emoji) => {
   const {title, originalTitle, poster, country, genres, rating, director, writers, actors, description, comments, release, duration, isWatchList, isWatched, isFavorite, age} = film;
   const commentsCount = comments.length;
@@ -68,7 +64,7 @@ const createFilmDetailsTemplate = (film, emoji) => {
     [`Genres`, createGenresMarkup(genres)]
   ];
 
-  const emojiMarkup = createEmojiMarkup(emoji);
+  const emojiImageMarkup = emoji ? createEmojiImageMarkup(emoji, emojies.sizes.big) : ``;
 
   return (
     `<section class="film-details">
@@ -126,7 +122,7 @@ const createFilmDetailsTemplate = (film, emoji) => {
 
             <div class="film-details__new-comment">
               <div for="add-emoji" class="film-details__add-emoji-label">
-                ${emojiMarkup}
+                ${emojiImageMarkup}
               </div>
 
               <label class="film-details__comment-label">
