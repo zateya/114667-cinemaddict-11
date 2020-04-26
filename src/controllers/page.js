@@ -138,7 +138,6 @@ export default class PageController {
     }
 
     this._films = [].concat(this._films.slice(0, index), newData, this._films.slice(index + 1));
-    console.log(this._showedFilmsControllers);
 
     [...this._showedFilmsControllers, ...this._ratedFilmsControllers, ...this._commentedFilmsControllers].forEach((it) => {
       const film = it.filmCardComponent.film;
