@@ -140,9 +140,9 @@ export default class PageController {
     this._films = [].concat(this._films.slice(0, index), newData, this._films.slice(index + 1));
 
     [...this._showedFilmsControllers, ...this._ratedFilmsControllers, ...this._commentedFilmsControllers].forEach((it) => {
-      const film = it.getFilm();
+      const film = it._filmCardComponent._film;
       if (film === oldData) {
-        it.render(this._films[index]);
+        it.render(newData);
       }
     });
   }

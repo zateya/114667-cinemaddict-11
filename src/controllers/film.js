@@ -77,10 +77,6 @@ export default class FilmController {
     }
   }
 
-  getFilm() {
-    return this._film;
-  }
-
   _addFilmToWatchList() {
     this._onDataChange(this._film, Object.assign({}, this._film, {
       isWatchList: !this._film.isWatchList,
