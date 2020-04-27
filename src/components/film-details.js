@@ -1,15 +1,22 @@
-import AbstractComponent from './abstract-component.js';
-import {MONTH_NAMES, emojies, POSTER_PATH, EMOJI_PATH} from '../constant.js';
+import AbstractSmartComponent from "./abstract-smart-component.js";
+import {MONTH_NAMES, emojies, POSTER_PATH} from '../constant.js';
 import {formatDate} from '../utils/common.js';
+
+const createEmojiImageMarkup = (emoji, size) => {
+  const [width, height] = size;
+  return `<img src="./${emojies.path}/${emoji}.${emojies.extension}" width="${width}" height="${height}" alt="emoji-${emoji}">`;
+};
 
 const createCommentMarkup = (comment) => {
   const {author, date, message, emoji} = comment;
   const formatedDate = formatDate(date);
 
+  const emojiImageMarkup = createEmojiImageMarkup(emoji, emojies.sizes.big);
+
   return (
     `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
-        <img src="./${EMOJI_PATH}/${emoji}.png" width="55" height="55" alt="emoji-${emoji}">
+        ${emojiImageMarkup}
       </span>
       <div>
         <p class="film-details__comment-text">${message}</p>
@@ -34,14 +41,17 @@ const createDetailsMarkup = (details) => details.map(([key, value]) => (
   </tr>`
 )).join(`\n`);
 
-const createEmojiListMarkup = () => emojies.map((emoji) => (
-  `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
-  <label class="film-details__emoji-label" for="emoji-${emoji}">
-    <img src="./${EMOJI_PATH}/${emoji}.png" width="30" height="30" alt="emoji">
-  </label>`
-)).join(`\n`);
+const createEmojiListMarkup = (currentEmoji) => emojies.list.map((emoji) => {
+  const checkedValue = emoji === currentEmoji ? `checked` : ``;
+  return (
+    `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}" ${checkedValue}>
+    <label class="film-details__emoji-label" for="emoji-${emoji}">
+      ${createEmojiImageMarkup(emoji, emojies.sizes.small)}
+    </label>`
+  );
+}).join(`\n`);
 
-const createFilmDetailsTemplate = (film) => {
+const createFilmDetailsTemplate = (film, currentEmoji) => {
   const {title, originalTitle, poster, country, genres, rating, director, writers, actors, description, comments, release, duration, isWatchList, isWatched, isFavorite, age} = film;
   const commentsCount = comments.length;
   const releaseDate = `${release.getDate()} ${MONTH_NAMES[release.getMonth()]} ${release.getFullYear()}`;
@@ -55,6 +65,8 @@ const createFilmDetailsTemplate = (film) => {
     [`Country`, country],
     [`Genres`, createGenresMarkup(genres)]
   ];
+
+  const emojiImageMarkup = currentEmoji ? createEmojiImageMarkup(currentEmoji, emojies.sizes.big) : ``;
 
   return (
     `<section class="film-details">
@@ -111,14 +123,16 @@ const createFilmDetailsTemplate = (film) => {
             ${commentsCount > 0 ? `<ul class="film-details__comments-list">${createCommentsListMarkup(comments)}</ul>` : ``}
 
             <div class="film-details__new-comment">
-              <div for="add-emoji" class="film-details__add-emoji-label"></div>
+              <div for="add-emoji" class="film-details__add-emoji-label">
+                ${emojiImageMarkup}
+              </div>
 
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
               </label>
 
               <div class="film-details__emoji-list">
-                ${createEmojiListMarkup()}
+                ${createEmojiListMarkup(currentEmoji)}
               </div>
             </div>
           </section>
@@ -128,18 +142,66 @@ const createFilmDetailsTemplate = (film) => {
   );
 };
 
-export default class FilmDetails extends AbstractComponent {
+export default class FilmDetails extends AbstractSmartComponent {
   constructor(film) {
     super();
 
     this._film = film;
+    this._emoji = null;
+    this._closeButtonClickHandler = null;
+    this._watchListInputChangeHandler = null;
+    this._watchedInputChangeHandler = null;
+    this._favoriteInputChangeHandler = null;
+
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film);
+    return createFilmDetailsTemplate(this._film, this._emoji);
   }
 
   setCloseButtonClickHandler(handler) {
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
+
+    this._closeButtonClickHandler = handler;
+  }
+
+  setWatchListInputChangeHadler(handler) {
+    this.getElement().querySelector(`#watchlist`).addEventListener(`change`, handler);
+
+    this._watchListInputChangeHandler = handler;
+  }
+
+  setWatchedInputChangeHadler(handler) {
+    this.getElement().querySelector(`#watched`).addEventListener(`change`, handler);
+
+    this._watchedInputChangeHandler = handler;
+  }
+
+  setFavoriteInputChangeHadler(handler) {
+    this.getElement().querySelector(`#favorite`).addEventListener(`change`, handler);
+
+    this._favoriteInputChangeHandler = handler;
+  }
+
+  recoveryListeners() {
+    this.setCloseButtonClickHandler(this._closeButtonClickHandler);
+    this.setWatchListInputChangeHadler(this._watchListInputChangeHandler);
+    this.setWatchedInputChangeHadler(this._watchedInputChangeHandler);
+    this.setFavoriteInputChangeHadler(this._favoriteInputChangeHandler);
+    this._subscribeOnEvents();
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    const emojiElements = Array.from(element.querySelectorAll(`.film-details__emoji-item`));
+
+    emojiElements.forEach((emojiElement) => {
+      emojiElement.addEventListener(`change`, (evt) => {
+        this._emoji = evt.target.value;
+        this.rerender();
+      });
+    });
   }
 }
