@@ -12,29 +12,26 @@ export const formatDuration = (minutes) => {
   return moment.utc(moment.duration(minutes, `minutes`).as(`milliseconds`)).format(`H[h] mm[m]`);
 };
 
-export const formatDate = (date) => {
+const isSameDay = (date1, date2) => {
+  return moment(date1).isSame(date2, `day`);
+};
+
+export const formatCommentDate = (date) => {
   const now = moment();
-  const today = now.startOf(`day`);
 
-  const isSameDay = moment(now).isSame(date, `day`);
-  const isMoreHalfDay = now.diff(today, `hours`) > 12;
-
-  if (isSameDay && isMoreHalfDay) {
-    return `Today`;
+  if (isSameDay(now, date)) {
+    const today = now.clone().startOf(`day`);
+    const isLessHalfDay = now.diff(today, `hours`) < 12;
+    return isLessHalfDay ? moment(date).format(`YYYY/MM/DD HH:mm`) : `Today`;
   }
 
-  if (isSameDay) {
-    return moment(date).format(`YYYY/MM/DD HH:mm`);
-  }
+  const yesterday = now.clone().subtract(1, `days`).startOf(`day`);
 
-  const yesterday = now.subtract(1, `days`).startOf(`day`);
-  const isYesterday = moment(yesterday).isSame(date, `day`);
+  return isSameDay(yesterday, date) ? `Yesterday` : moment(date).fromNow();
+};
 
-  if (isYesterday) {
-    return `Yesterday`;
-  }
-
-  return moment(date).fromNow();
+export const formateDate = (date) => {
+  return moment(date).format(`DD MMMM YYYY`);
 };
 
 export const getFullYear = (date) => {

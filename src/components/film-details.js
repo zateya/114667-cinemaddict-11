@@ -1,6 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {MONTH_NAMES, emojies, POSTER_PATH} from '../constant.js';
-import {formatDate} from '../utils/common.js';
+import {emojies, POSTER_PATH} from '../constant.js';
+import {formatDuration, formatCommentDate, formateDate} from '../utils/common.js';
 
 const createEmojiImageMarkup = (emoji, size) => {
   const [width, height] = size;
@@ -9,7 +9,7 @@ const createEmojiImageMarkup = (emoji, size) => {
 
 const createCommentMarkup = (comment) => {
   const {author, date, message, emoji} = comment;
-  const formatedDate = formatDate(date);
+  const formatedDate = formatCommentDate(date);
 
   const emojiImageMarkup = createEmojiImageMarkup(emoji, emojies.sizes.big);
 
@@ -54,14 +54,14 @@ const createEmojiListMarkup = (currentEmoji) => emojies.list.map((emoji) => {
 const createFilmDetailsTemplate = (film, currentEmoji) => {
   const {title, originalTitle, poster, country, genres, rating, director, writers, actors, description, comments, release, duration, isWatchList, isWatched, isFavorite, age} = film;
   const commentsCount = comments.length;
-  const releaseDate = `${release.getDate()} ${MONTH_NAMES[release.getMonth()]} ${release.getFullYear()}`;
+  const releaseDate = formateDate(release);
 
   const details = [
     [`Director`, director],
     [`Writers`, writers],
     [`Actors`, actors],
     [`Release Date`, releaseDate],
-    [`Runtime`, duration],
+    [`Runtime`, formatDuration(duration)],
     [`Country`, country],
     [`Genres`, createGenresMarkup(genres)]
   ];
