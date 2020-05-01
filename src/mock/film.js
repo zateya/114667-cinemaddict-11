@@ -1,5 +1,4 @@
 import {emojies, genres} from '../constant.js';
-import {formatDuration} from '../utils/common.js';
 
 const filmNames = [
   `The Dance of Life`,
@@ -112,9 +111,9 @@ const getRandomArray = (array) => {
   return Array.from(new Set(randomArray));
 };
 
-const getRandomDate = () => {
+const getRandomDate = (minDiff, maxDiff) => {
   const targetDate = new Date();
-  const diffValue = getRandomIntegerNumber(0, 20000);
+  const diffValue = getRandomIntegerNumber(minDiff, maxDiff);
   targetDate.setDate(targetDate.getDate() - diffValue);
 
   return targetDate;
@@ -133,7 +132,7 @@ const generateDescription = (text, minSentencesCount, maxSentencesCount) => {
 const getComment = () => {
   return {
     author: getRandomArrayItem(authors),
-    date: getRandomDate(),
+    date: getRandomDate(0, 10),
     message: getRandomArrayItem(comments),
     emoji: getRandomArrayItem(emojies.list),
   };
@@ -148,9 +147,6 @@ const getComments = (minCount, maxCount) => {
 };
 
 const generateFilm = () => {
-  const hours = getRandomIntegerNumber(0, 4);
-  const minutes = getRandomIntegerNumber(0, 59);
-
   return {
     title: getRandomArrayItem(filmNames),
     originalTitle: getRandomArrayItem(filmNames),
@@ -163,8 +159,8 @@ const generateFilm = () => {
     actors: getRandomArray(actors).join(`, `),
     description: generateDescription(description, DescriptionSentencesCount.MIN, DescriptionSentencesCount.MAX),
     comments: getComments(CommentsCount.MIN, CommentsCount.MAX),
-    release: getRandomDate(),
-    duration: formatDuration(hours, minutes),
+    release: getRandomDate(0, 10000),
+    duration: getRandomIntegerNumber(30, 180),
     isWatchList: Math.random() > 0.5,
     isWatched: Math.random() > 0.5,
     isFavorite: Math.random() > 0.5,

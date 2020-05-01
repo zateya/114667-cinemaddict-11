@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const getShortText = (text, maxLength) => {
   if (text.length > maxLength) {
     return text.slice(0, maxLength).trim() + `…`;
@@ -6,25 +8,37 @@ export const getShortText = (text, maxLength) => {
   return text;
 };
 
-export const formatDuration = (hours, minutes) => {
-  const formatedHours = hours > 0 ? `${hours}h ` : ``;
-  const formatedMinutes = minutes < 10 ? `0${minutes}m` : `${minutes}m`;
-
-  return `${formatedHours}${formatedMinutes}`;
-};
-
-const castDateTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : String(value);
+export const formatDuration = (minutes) => {
+  return moment.utc(moment.duration(minutes, `minutes`).as(`milliseconds`)).format(`H[h] mm[m]`);
 };
 
 export const formatDate = (date) => {
-  const day = castDateTimeFormat(date.getDate());
-  const month = castDateTimeFormat(date.getMonth() + 1);
-  const year = date.getFullYear();
-  const hours = castDateTimeFormat(date.getHours());
-  const minutes = castDateTimeFormat(date.getMinutes());
+  const now = moment();
+  const today = now.startOf(`day`);
 
-  return `${year}/${month}/${day} ${hours}:${minutes}`;
+  const isSameDay = moment(now).isSame(date, `day`);
+  const isMoreHalfDay = now.diff(today, `hours`) > 12;
+
+  if (isSameDay && isMoreHalfDay) {
+    return `Today`;
+  }
+
+  if (isSameDay) {
+    return moment(date).format(`YYYY/MM/DD HH:mm`);
+  }
+
+  const yesterday = now.subtract(1, `days`).startOf(`day`);
+  const isYesterday = moment(yesterday).isSame(date, `day`);
+
+  if (isYesterday) {
+    return `Yesterday`;
+  }
+
+  return moment(date).fromNow();
+};
+
+export const getFullYear = (date) => {
+  return moment(date).format(`YYYY`);
 };
 
 export const formatIntegerWithSpaces = (num) => {

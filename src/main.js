@@ -5,7 +5,7 @@ import PageController from './controllers/page.js';
 import FooterStatisticsComponent from './components/footer-statistics.js';
 import {render} from './utils/render.js';
 import {generateMenuItems} from './mock/menu.js';
-import {generateFilms, statisticFilmsCount} from './mock/film.js';
+import {generateFilms} from './mock/film.js';
 import {FILMS_COUNT} from './constant.js';
 
 const siteHeaderElement = document.querySelector(`.header`);
@@ -24,4 +24,4 @@ const pageController = new PageController(filmsComponent);
 render(siteMainElement, filmsComponent);
 pageController.render(films);
 
-render(siteFooterElement, new FooterStatisticsComponent(statisticFilmsCount));
+render(siteFooterElement, new FooterStatisticsComponent(films.length));
