@@ -22,7 +22,7 @@ const getSortedFilms = (films, sortType, from, to) => {
 
   switch (sortType) {
     case SortType.DATE:
-      sortedFilms = showingFilms.sort((a, b) => b.release - a.release);
+      sortedFilms = showingFilms.sort((a, b) => b.release.date - a.release.date);
       break;
     case SortType.RATING:
       sortedFilms = showingFilms.sort((a, b) => b.rating - a.rating);
