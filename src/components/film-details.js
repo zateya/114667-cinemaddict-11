@@ -1,72 +1,58 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {emojies, POSTER_PATH} from '../constant.js';
-import {formatDuration, formatCommentDate, formateDate} from '../utils/common.js';
-
-const createEmojiImageMarkup = (emoji, size) => {
-  const [width, height] = size;
-  return `<img src="./${emojies.path}/${emoji}.${emojies.extension}" width="${width}" height="${height}" alt="emoji-${emoji}">`;
-};
-
-const createCommentMarkup = (comment) => {
-  const {author, date, message, emoji} = comment;
-  const formatedDate = formatCommentDate(date);
-
-  const emojiImageMarkup = createEmojiImageMarkup(emoji, emojies.sizes.big);
-
-  return (
-    `<li class="film-details__comment">
-      <span class="film-details__comment-emoji">
-        ${emojiImageMarkup}
-      </span>
-      <div>
-        <p class="film-details__comment-text">${message}</p>
-        <p class="film-details__comment-info">
-          <span class="film-details__comment-author">${author}</span>
-          <span class="film-details__comment-day">${formatedDate}</span>
-          <button class="film-details__comment-delete">Delete</button>
-        </p>
-      </div>
-    </li>`
-  );
-};
-
-const createCommentsListMarkup = (comments) => comments.map((comment) => createCommentMarkup(comment)).join(`\n`);
+import {POSTER_PATH, filmControls} from '../constant.js';
+import {formatDuration, formateDate} from '../utils/common.js';
 
 const createGenresMarkup = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(`\n`);
 
-const createDetailsMarkup = (details) => details.map(([key, value]) => (
-  `<tr class="film-details__row">
-    <td class="film-details__term">${key}</td>
-    <td class="film-details__cell">${value}</td>
-  </tr>`
-)).join(`\n`);
+const createDetailsMarkup = (details) => {
 
-const createEmojiListMarkup = (currentEmoji) => emojies.list.map((emoji) => {
-  const checkedValue = emoji === currentEmoji ? `checked` : ``;
   return (
-    `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}" ${checkedValue}>
-    <label class="film-details__emoji-label" for="emoji-${emoji}">
-      ${createEmojiImageMarkup(emoji, emojies.sizes.small)}
-    </label>`
+    `<table class="film-details__table">
+      ${details.map(([key, value]) => (
+      `<tr class="film-details__row">
+        <td class="film-details__term">${key}</td>
+        <td class="film-details__cell">${value}</td>
+      </tr>`
+    )).join(`\n`)}
+    </table>`
   );
-}).join(`\n`);
+};
 
-const createFilmDetailsTemplate = (film, currentEmoji) => {
-  const {title, originalTitle, poster, country, genres, rating, director, writers, actors, description, comments, release, duration, isWatchList, isWatched, isFavorite, age} = film;
-  const commentsCount = comments.length;
-  const releaseDate = formateDate(release);
+const createControlItemMarkup = (control, isChecked) => {
+  const {type, name} = control;
+
+  return (
+    `<input type="checkbox" class="film-details__control-input visually-hidden" id="${type}" name="${type}" ${isChecked ? `checked` : ``}>
+    <label for="${type}" class="film-details__control-label film-details__control-label--${type}">${name}</label>`
+  );
+};
+
+const createControlsMarkup = (...params) => {
+  const controlMarkup = filmControls.map((control, i) => createControlItemMarkup(control, params[i])).join(`\n`);
+
+  return (
+    `<section class="film-details__controls">
+      ${controlMarkup}
+    </section>`
+  );
+};
+
+const createFilmDetailsTemplate = (film) => {
+  const {title, originalTitle, poster, genres, rating, ageRating, director, writers, actors, release: {date, country}, duration, description, isWatchList, isWatched, isFavorite} = film;
+
+  const releaseDate = formateDate(date);
 
   const details = [
     [`Director`, director],
-    [`Writers`, writers],
-    [`Actors`, actors],
+    [`Writers`, writers.join(`, `)],
+    [`Actors`, actors.join(`, `)],
     [`Release Date`, releaseDate],
     [`Runtime`, formatDuration(duration)],
     [`Country`, country],
     [`Genres`, createGenresMarkup(genres)]
   ];
 
-  const emojiImageMarkup = currentEmoji ? createEmojiImageMarkup(currentEmoji, emojies.sizes.big) : ``;
+  const controlsMarkup = createControlsMarkup(isWatchList, isWatched, isFavorite);
 
   return (
     `<section class="film-details">
@@ -79,7 +65,7 @@ const createFilmDetailsTemplate = (film, currentEmoji) => {
             <div class="film-details__poster">
               <img class="film-details__poster-img" src="./${POSTER_PATH}/${poster}" alt="">
 
-              <p class="film-details__age">${age}</p>
+              <p class="film-details__age">${ageRating}</p>
             </div>
 
             <div class="film-details__info">
@@ -94,9 +80,7 @@ const createFilmDetailsTemplate = (film, currentEmoji) => {
                 </div>
               </div>
 
-              <table class="film-details__table">
-                ${createDetailsMarkup(details)}
-              </table>
+              ${createDetailsMarkup(details)}
 
               <p class="film-details__film-description">
                 ${description}
@@ -104,39 +88,9 @@ const createFilmDetailsTemplate = (film, currentEmoji) => {
             </div>
           </div>
 
-          <section class="film-details__controls">
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${isWatchList ? `checked` : ``}>
-            <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
-
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${isWatched ? `checked` : ``}>
-            <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
-
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${isFavorite ? `checked` : ``}>
-            <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
-          </section>
+          ${controlsMarkup}
         </div>
 
-        <div class="form-details__bottom-container">
-          <section class="film-details__comments-wrap">
-            <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
-
-            ${commentsCount > 0 ? `<ul class="film-details__comments-list">${createCommentsListMarkup(comments)}</ul>` : ``}
-
-            <div class="film-details__new-comment">
-              <div for="add-emoji" class="film-details__add-emoji-label">
-                ${emojiImageMarkup}
-              </div>
-
-              <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-              </label>
-
-              <div class="film-details__emoji-list">
-                ${createEmojiListMarkup(currentEmoji)}
-              </div>
-            </div>
-          </section>
-        </div>
       </form>
     </section>`
   );
@@ -147,17 +101,14 @@ export default class FilmDetails extends AbstractSmartComponent {
     super();
 
     this._film = film;
-    this._emoji = null;
     this._closeButtonClickHandler = null;
     this._watchListInputChangeHandler = null;
     this._watchedInputChangeHandler = null;
     this._favoriteInputChangeHandler = null;
-
-    this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film, this._emoji);
+    return createFilmDetailsTemplate(this._film);
   }
 
   setCloseButtonClickHandler(handler) {
@@ -189,19 +140,5 @@ export default class FilmDetails extends AbstractSmartComponent {
     this.setWatchListInputChangeHadler(this._watchListInputChangeHandler);
     this.setWatchedInputChangeHadler(this._watchedInputChangeHandler);
     this.setFavoriteInputChangeHadler(this._favoriteInputChangeHandler);
-    this._subscribeOnEvents();
-  }
-
-  _subscribeOnEvents() {
-    const element = this.getElement();
-
-    const emojiElements = Array.from(element.querySelectorAll(`.film-details__emoji-item`));
-
-    emojiElements.forEach((emojiElement) => {
-      emojiElement.addEventListener(`change`, (evt) => {
-        this._emoji = evt.target.value;
-        this.rerender();
-      });
-    });
   }
 }

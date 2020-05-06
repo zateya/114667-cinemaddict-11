@@ -22,15 +22,7 @@ export const createElement = (template) => {
 };
 
 export const replace = (newComponent, oldComponent) => {
-  const parentElement = oldComponent.getElement().parentElement;
-  const newElement = newComponent.getElement();
-  const oldElement = oldComponent.getElement();
-
-  const isExistElements = !!(parentElement && newElement && oldElement);
-
-  if (isExistElements && parentElement.contains(oldElement)) {
-    parentElement.replaceChild(newElement, oldElement);
-  }
+  oldComponent.getElement().replaceWith(newComponent.getElement());
 };
 
 export const remove = (component) => {

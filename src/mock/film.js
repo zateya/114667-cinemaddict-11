@@ -1,4 +1,6 @@
-import {emojies, genres} from '../constant.js';
+import {genres} from '../constant.js';
+import {comments} from './comments.js';
+import {getRandomIntegerNumber, getRandomFloatNumber, getRandomArrayItem, getRandomArray, getRandomDate, generateDescription} from './utils.js';
 
 const filmNames = [
   `The Dance of Life`,
@@ -37,25 +39,6 @@ const DescriptionSentencesCount = {
   MAX: 5
 };
 
-const authors = [
-  `Tim Macoveev`,
-  `Vadim Makeev`,
-  `John Doe`
-];
-
-const comments = [
-  `Interesting setting and a good cast`,
-  `Booooooooooring`,
-  `Very very old. Meh`,
-  `OMG! OMG! OMG!`,
-  `Almost two hours? Seriously?`
-];
-
-const CommentsCount = {
-  MIN: 0,
-  MAX: 5
-};
-
 const ages = [
   `6+`,
   `12+`,
@@ -87,93 +70,49 @@ const actors = [
   `Dan Duryea`
 ];
 
-const getRandomIntegerNumber = (min, max) => {
-  return min + Math.floor(Math.random() * (max - min + 1));
+const CommentsCount = {
+  MIN: 0,
+  MAX: 5
 };
 
-const getRandomFloatNumber = (min, max) => {
-  return min + Math.random() * (max - min);
-};
-
-const getRandomArrayItem = (array) => {
-  const randomIndex = getRandomIntegerNumber(0, array.length - 1);
-
-  return array[randomIndex];
-};
-
-const getRandomArray = (array) => {
-  const count = getRandomIntegerNumber(1, array.length - 1);
-
-  const randomArray = new Array(count)
-    .fill(``)
-    .map(() => getRandomArrayItem(array));
-
-  return Array.from(new Set(randomArray));
-};
-
-const getRandomDate = (minDiff, maxDiff) => {
-  const targetDate = new Date();
-  const diffValue = getRandomIntegerNumber(minDiff, maxDiff);
-  targetDate.setDate(targetDate.getDate() - diffValue);
-
-  return targetDate;
-};
-
-const generateDescription = (text, minSentencesCount, maxSentencesCount) => {
-  const sentences = text.split(`. `);
-  const sentencesCount = getRandomIntegerNumber(minSentencesCount, maxSentencesCount);
-
-  return new Array(sentencesCount)
-    .fill(``)
-    .map(() => `${getRandomArrayItem(sentences)}.`)
-    .join(` `);
-};
-
-const getComment = () => {
-  return {
-    author: getRandomArrayItem(authors),
-    date: getRandomDate(0, 10),
-    message: getRandomArrayItem(comments),
-    emoji: getRandomArrayItem(emojies.list),
-  };
-};
-
-const getComments = (minCount, maxCount) => {
-  const count = getRandomIntegerNumber(minCount, maxCount);
-
-  return new Array(count)
-    .fill(``)
-    .map(getComment);
-};
+const commentsIds = comments.map((comment) => comment.id);
 
 const generateFilm = () => {
-  return {
+  const commentsCount = getRandomIntegerNumber(CommentsCount.MIN, CommentsCount.MAX);
+  const filmCommentsIds = getRandomArray(commentsIds).slice(0, commentsCount);
+
+  const film = {
+    id: String(new Date() + Math.random()),
     title: getRandomArrayItem(filmNames),
     originalTitle: getRandomArrayItem(filmNames),
     poster: getRandomArrayItem(posters),
-    country: getRandomArrayItem(countries),
     genres: getRandomArray(genres),
     rating: parseFloat(getRandomFloatNumber(5, 10).toFixed(1)),
+    ageRating: getRandomArrayItem(ages),
     director: getRandomArrayItem(directors),
-    writers: getRandomArray(writers).join(`, `),
-    actors: getRandomArray(actors).join(`, `),
-    description: generateDescription(description, DescriptionSentencesCount.MIN, DescriptionSentencesCount.MAX),
-    comments: getComments(CommentsCount.MIN, CommentsCount.MAX),
-    release: getRandomDate(0, 10000),
+    writers: getRandomArray(writers),
+    actors: getRandomArray(actors),
+    release: {
+      date: getRandomDate(0, 10000),
+      country: getRandomArrayItem(countries),
+    },
     duration: getRandomIntegerNumber(30, 180),
+    description: generateDescription(description, DescriptionSentencesCount.MIN, DescriptionSentencesCount.MAX),
     isWatchList: Math.random() > 0.5,
     isWatched: Math.random() > 0.5,
     isFavorite: Math.random() > 0.5,
-    age: getRandomArrayItem(ages)
+    comments: filmCommentsIds
   };
+
+  if (film.isWatched) {
+    film.watchingDate = getRandomDate(0, 365);
+  }
+
+  return film;
 };
 
-const generateFilms = (count) => {
+export const generateFilms = (count) => {
   return new Array(count)
     .fill(``)
     .map(generateFilm);
 };
-
-const statisticFilmsCount = getRandomIntegerNumber(100000, 200000);
-
-export {generateFilms, statisticFilmsCount};

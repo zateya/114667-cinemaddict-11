@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from 'moment';
 
 export const getShortText = (text, maxLength) => {
   if (text.length > maxLength) {
@@ -40,4 +40,13 @@ export const getFullYear = (date) => {
 
 export const formatIntegerWithSpaces = (num) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ` `);
+};
+
+export const setActiveElement = (container, element, activeClass) => {
+  const activeElement = container.querySelector(`.${activeClass}`);
+
+  if (!element.classList.contains(`${activeClass}`)) {
+    activeElement.classList.remove(activeClass);
+    element.classList.add(activeClass);
+  }
 };

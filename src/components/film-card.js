@@ -3,14 +3,14 @@ import {SHORT_DESCRIPTION_LENGTH, POSTER_PATH} from '../constant.js';
 import {getShortText, formatDuration, getFullYear} from '../utils/common.js';
 
 const createFilmCardTemplate = (film) => {
-  const {title, poster, genres, rating, description, comments, release, duration, isWatchList, isWatched, isFavorite} = film;
+  const {title, poster, genres, rating, description, release: {date}, duration, isWatchList, isWatched, isFavorite, comments} = film;
 
   const shortDescription = getShortText(description, SHORT_DESCRIPTION_LENGTH);
   const isWatchListClass = isWatchList ? `film-card__controls-item--active` : ``;
   const isWatchedClass = isWatched ? `film-card__controls-item--active` : ``;
   const isFavoriteClass = isFavorite ? `film-card__controls-item--active` : ``;
   const commentsCount = comments.length;
-  const releaseYear = getFullYear(release);
+  const releaseYear = getFullYear(date);
   const formatedDuration = formatDuration(duration);
 
   return (
@@ -39,6 +39,10 @@ export default class FilmCard extends AbstractComponent {
     super();
 
     this._film = film;
+  }
+
+  getFilm() {
+    return this._film;
   }
 
   getTemplate() {
