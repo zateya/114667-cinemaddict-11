@@ -6,9 +6,7 @@ import PageController from './controllers/page.js';
 import FooterStatisticsComponent from './components/footer-statistics.js';
 import {render} from './utils/render.js';
 import FilmsModel from './models/films.js';
-import CommentsModel from './models/comments.js';
 import {generateFilms} from './mock/film.js';
-import {comments} from './mock/comments.js';
 import {ALL_FILMS_COUNT} from './constant.js';
 
 const siteHeaderElement = document.querySelector(`.header`);
@@ -25,17 +23,13 @@ render(siteMainElement, siteMenuComponent);
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(films);
 
-const commentsModel = new CommentsModel();
-
-commentsModel.setComments(comments);
-
 const filterController = new FilterController(siteMenuComponent.getElement(), filmsModel);
 filterController.render();
 
 const filmsComponent = new FilmsComponent();
 render(siteMainElement, filmsComponent);
 
-const pageController = new PageController(filmsComponent.getElement(), filmsModel, commentsModel);
+const pageController = new PageController(filmsComponent.getElement(), filmsModel);
 pageController.render(films);
 
 render(siteFooterElement, new FooterStatisticsComponent(filmsModel.getFilms().length));

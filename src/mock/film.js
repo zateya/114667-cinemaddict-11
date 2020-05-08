@@ -1,5 +1,5 @@
 import {genres} from '../constant.js';
-import {comments} from './comments.js';
+import {generateComments} from './comments.js';
 import {getRandomIntegerNumber, getRandomFloatNumber, getRandomArrayItem, getRandomArray, getRandomDate, generateDescription} from './utils.js';
 
 const filmNames = [
@@ -75,11 +75,8 @@ const CommentsCount = {
   MAX: 5
 };
 
-const commentsIds = comments.map((comment) => comment.id);
-
 const generateFilm = () => {
   const commentsCount = getRandomIntegerNumber(CommentsCount.MIN, CommentsCount.MAX);
-  const filmCommentsIds = getRandomArray(commentsIds).slice(0, commentsCount);
 
   const film = {
     id: String(new Date() + Math.random()),
@@ -101,7 +98,7 @@ const generateFilm = () => {
     isWatchList: Math.random() > 0.5,
     isWatched: Math.random() > 0.5,
     isFavorite: Math.random() > 0.5,
-    comments: filmCommentsIds
+    comments: generateComments(commentsCount),
   };
 
   if (film.isWatched) {

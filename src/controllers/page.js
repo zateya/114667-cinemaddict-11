@@ -6,9 +6,9 @@ import ShowMoreButtonComponent from '../components/show-more-button.js';
 import {render, remove} from '../utils/render.js';
 import {FilmsCount, FilmsTitle, ListType, SortType} from '../constant.js';
 
-const renderFilms = (filmsContainerElement, films, onDataChange, onViewChange, commentsModel) => {
+const renderFilms = (filmsContainerElement, films, onDataChange, onViewChange) => {
   return films.map((film) => {
-    const filmController = new FilmController(filmsContainerElement, onDataChange, onViewChange, commentsModel);
+    const filmController = new FilmController(filmsContainerElement, onDataChange, onViewChange);
 
     filmController.render(film);
 
@@ -39,11 +39,10 @@ const getSortedFilms = (films, sortType, from, to) => {
 };
 
 export default class PageController {
-  constructor(container, filmsModel, commentsModel) {
+  constructor(container, filmsModel) {
     this._container = container;
 
     this._filmsModel = filmsModel;
-    this._commentsModel = commentsModel;
     this._showingFilmsCount = FilmsCount.ON_START;
     this._showedFilmsControllers = [];
     this._ratedFilmsControllers = [];

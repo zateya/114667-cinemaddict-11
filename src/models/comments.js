@@ -1,6 +1,8 @@
 export default class Comment {
   constructor() {
     this._comments = [];
+
+    this._dataChangeHandlers = [];
   }
 
   getComments() {
@@ -9,6 +11,7 @@ export default class Comment {
 
   setComments(comments) {
     this._comments = Array.from(comments);
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   removeComment(id) {
@@ -19,6 +22,7 @@ export default class Comment {
     }
 
     this._comments = [].concat(this._comments.slice(0, index), this._comments.slice(index + 1));
+    this._callHandlers(this._dataChangeHandlers);
 
     return true;
   }

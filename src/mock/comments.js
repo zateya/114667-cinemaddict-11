@@ -2,8 +2,6 @@
 import {getRandomArrayItem, getRandomDate} from './utils.js';
 import {emojiesData} from '../constant.js';
 
-const ALL_COMMENTS_COUNT = 20;
-
 const authors = [
   `Tim Macoveev`,
   `Vadim Makeev`,
@@ -28,4 +26,8 @@ const getComment = () => {
   };
 };
 
-export const comments = new Array(ALL_COMMENTS_COUNT).fill(``).map(getComment);
+export const generateComments = (count) => {
+  return new Array(count)
+    .fill(``)
+    .map(getComment);
+};

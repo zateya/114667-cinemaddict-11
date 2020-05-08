@@ -1,22 +1,46 @@
 import FilmCardComponent from '../components/film-card.js';
 import FilmDetailsComponent from '../components/film-details.js';
-import FilmCommentsComponent from '../components/comments.js';
+import CommentsContainerComponent from '../components/comments-container.js';
+import CommentsTitleComponent from '../components/comments-title.js';
+import CommentsListComponent from '../components/comments-list.js';
+import CommentInputComponent from '../components/comment-input.js';
+import CommentController from '../controllers/comment.js';
+import CommentsModel from '../models/comments.js';
 import {render, replace, remove} from '../utils/render.js';
 import {ESCAPE_KEY_CODE, FilmControllerMode as Mode} from "../constant.js";
-import {getCommentsByFilm} from '../utils/comments.js';
 
 const bodyElement = document.body;
 
+const renderComments = (container, comments, onCommentDataChange) => {
+  return comments.map((comment) => {
+    const commentController = new CommentController(container, onCommentDataChange);
+    commentController.render(comment);
+
+    return commentController;
+  });
+};
+
 export default class FilmController {
-  constructor(container, onDataChange, onViewChange, commentsModel) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
-    this._commentsModel = commentsModel;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._mode = Mode.DEFAULT;
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
-    this._filmCommentsComponent = null;
+
+    this._commentsModel = new CommentsModel();
+    this._commentsWrapElement = null;
+    this._commentsTitleComponent = null;
+    this._commentListComponent = new CommentsListComponent();
+    this._commentsControllers = [];
+    this._showingCommentsCount = 0;
+
+    this._emoji = ``;
+    this._comment = ``;
+    this._onEmojiChange = this._onEmojiChange.bind(this);
+    this._onCommentInput = this._onCommentInput.bind(this);
+    this._onCommentDataChange = this._onCommentDataChange.bind(this);
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
@@ -28,10 +52,22 @@ export default class FilmController {
     this._filmCardComponent = new FilmCardComponent(film);
     this._filmDetailsComponent = new FilmDetailsComponent(film);
 
-    const filmComments = getCommentsByFilm(film, this._commentsModel.getComments());
+    this._commentsModel.setComments(film.comments);
 
-    this._filmCommentsComponent = new FilmCommentsComponent(filmComments);
-    render(this._filmDetailsComponent.getElement().querySelector(`form`), this._filmCommentsComponent);
+    const commentsContainerComponent = new CommentsContainerComponent();
+    const filmDetailsFormElement = this._filmDetailsComponent.getFormElement();
+    render(filmDetailsFormElement, commentsContainerComponent);
+    this._commentsWrapElement = commentsContainerComponent.getCommentsWrapElement();
+
+    this._commentsTitleComponent = new CommentsTitleComponent(this._commentsModel.getComments().length);
+    render(this._commentsWrapElement, this._commentsTitleComponent);
+
+    render(this._commentsWrapElement, this._commentListComponent);
+
+    this._renderComments();
+
+    const commentInputComponent = new CommentInputComponent(this._emoji, this._comment, this._onEmojiChange, this._onCommentInput);
+    render(this._commentsWrapElement, commentInputComponent);
 
     this._filmCardComponent.setClickHandler(() => {
       this._showFilmDetails();
@@ -56,24 +92,24 @@ export default class FilmController {
       }));
     };
 
-    this._filmCardComponent.setWatchlistButtonClickHadler((evt) => {
+    this._filmCardComponent.setWatchlistButtonClickHandler((evt) => {
       evt.preventDefault();
       addFilmToWatchList();
     });
 
-    this._filmCardComponent.setWatchedButtonClickHadler((evt) => {
+    this._filmCardComponent.setWatchedButtonClickHandler((evt) => {
       evt.preventDefault();
       addFilmToWatched();
     });
 
-    this._filmCardComponent.setFavoriteButtonClickHadler((evt) => {
+    this._filmCardComponent.setFavoriteButtonClickHandler((evt) => {
       evt.preventDefault();
       addFilmToFavorite();
     });
 
-    this._filmDetailsComponent.setWatchListInputChangeHadler(addFilmToWatchList);
-    this._filmDetailsComponent.setWatchedInputChangeHadler(addFilmToWatched);
-    this._filmDetailsComponent.setFavoriteInputChangeHadler(addFilmToFavorite);
+    this._filmDetailsComponent.setWatchListInputChangeHandler(addFilmToWatchList);
+    this._filmDetailsComponent.setWatchedInputChangeHandler(addFilmToWatched);
+    this._filmDetailsComponent.setFavoriteInputChangeHandler(addFilmToFavorite);
 
     this._filmDetailsComponent.setCloseButtonClickHandler(() => {
       this._hideFilmDetails();
@@ -101,6 +137,58 @@ export default class FilmController {
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
       this._hideFilmDetails();
+    }
+  }
+
+  _onEmojiChange(emoji) {
+    this._emoji = emoji;
+  }
+
+  _onCommentInput(comment) {
+    this._comment = comment;
+  }
+
+  _removeComments() {
+    this._commentsControllers.forEach((commentController) => commentController.destroy());
+    this._commentsControllers = [];
+  }
+
+  _renderComments() {
+    this._removeComments();
+    const commentsListElement = this._commentListComponent.getElement();
+    this._commentsControllers = renderComments(commentsListElement, this._commentsModel.getComments(), this._onCommentDataChange);
+    this._showingCommentsCount = this._commentsControllers.length;
+  }
+
+  _updateCommentsTitle() {
+    const oldTitle = this._commentsTitleComponent;
+    const newTitle = new CommentsTitleComponent(this._commentsModel.getComments().length);
+    replace(newTitle, oldTitle);
+    this._commentsTitleComponent = newTitle;
+  }
+
+  _updateComments() {
+    if (this._commentsControllers.length > 0 && this._showingCommentsCount === 0) {
+      render(this._commentsWrapElement, this._commentListComponent);
+    }
+
+    this._renderComments();
+    this._updateCommentsTitle();
+
+    if (this._showingCommentsCount === 0) {
+      remove(this._commentListComponent);
+    }
+  }
+
+  _onCommentDataChange(commentController, oldData, newData) {
+    if (oldData === null) {
+      this._commentsModel.addComment(newData);
+      this._updateComments();
+    }
+
+    if (newData === null) {
+      this._commentsModel.removeComment(oldData.id);
+      this._updateComments();
     }
   }
 

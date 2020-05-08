@@ -1,4 +1,4 @@
-import AbstractSmartComponent from "./abstract-smart-component.js";
+import AbstractComponent from "./abstract-component.js";
 import {POSTER_PATH, filmControls} from '../constant.js';
 import {formatDuration, formateDate} from '../utils/common.js';
 
@@ -96,49 +96,34 @@ const createFilmDetailsTemplate = (film) => {
   );
 };
 
-export default class FilmDetails extends AbstractSmartComponent {
+export default class FilmDetails extends AbstractComponent {
   constructor(film) {
     super();
 
     this._film = film;
-    this._closeButtonClickHandler = null;
-    this._watchListInputChangeHandler = null;
-    this._watchedInputChangeHandler = null;
-    this._favoriteInputChangeHandler = null;
   }
 
   getTemplate() {
     return createFilmDetailsTemplate(this._film);
   }
 
+  getFormElement() {
+    return this.getElement().querySelector(`form`);
+  }
+
   setCloseButtonClickHandler(handler) {
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
-
-    this._closeButtonClickHandler = handler;
   }
 
-  setWatchListInputChangeHadler(handler) {
+  setWatchListInputChangeHandler(handler) {
     this.getElement().querySelector(`#watchlist`).addEventListener(`change`, handler);
-
-    this._watchListInputChangeHandler = handler;
   }
 
-  setWatchedInputChangeHadler(handler) {
+  setWatchedInputChangeHandler(handler) {
     this.getElement().querySelector(`#watched`).addEventListener(`change`, handler);
-
-    this._watchedInputChangeHandler = handler;
   }
 
-  setFavoriteInputChangeHadler(handler) {
+  setFavoriteInputChangeHandler(handler) {
     this.getElement().querySelector(`#favorite`).addEventListener(`change`, handler);
-
-    this._favoriteInputChangeHandler = handler;
-  }
-
-  recoveryListeners() {
-    this.setCloseButtonClickHandler(this._closeButtonClickHandler);
-    this.setWatchListInputChangeHadler(this._watchListInputChangeHandler);
-    this.setWatchedInputChangeHadler(this._watchedInputChangeHandler);
-    this.setFavoriteInputChangeHadler(this._favoriteInputChangeHandler);
   }
 }
