@@ -1,3 +1,6 @@
+import moment from 'moment';
+import {KeyCode} from '../constant.js';
+
 export const getShortText = (text, maxLength) => {
   if (text.length > maxLength) {
     return text.slice(0, maxLength).trim() + `…`;
@@ -6,27 +9,36 @@ export const getShortText = (text, maxLength) => {
   return text;
 };
 
-export const formatDuration = (hours, minutes) => {
-  const formatedHours = hours > 0 ? `${hours}h ` : ``;
-  const formatedMinutes = minutes < 10 ? `0${minutes}m` : `${minutes}m`;
-
-  return `${formatedHours}${formatedMinutes}`;
+export const formatDuration = (minutes) => {
+  return moment.utc(moment.duration(minutes, `minutes`).as(`milliseconds`)).format(`H[h] mm[m]`);
 };
 
-const castDateTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : String(value);
+export const formatCommentDate = (date) => {
+  return moment(date).format(`YYYY/MM/DD HH:mm`);
 };
 
-export const formatDate = (date) => {
-  const day = castDateTimeFormat(date.getDate());
-  const month = castDateTimeFormat(date.getMonth() + 1);
-  const year = date.getFullYear();
-  const hours = castDateTimeFormat(date.getHours());
-  const minutes = castDateTimeFormat(date.getMinutes());
+export const formateDate = (date) => {
+  return moment(date).format(`DD MMMM YYYY`);
+};
 
-  return `${year}/${month}/${day} ${hours}:${minutes}`;
+export const getFullYear = (date) => {
+  return moment(date).format(`YYYY`);
 };
 
 export const formatIntegerWithSpaces = (num) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ` `);
 };
+
+export const setActiveElement = (container, element, activeClass) => {
+  const activeElement = container.querySelector(`.${activeClass}`);
+
+  if (!element.classList.contains(`${activeClass}`)) {
+    activeElement.classList.remove(activeClass);
+    element.classList.add(activeClass);
+  }
+};
+
+export const isEscEvent = (evt) => evt.keyCode === KeyCode.ESCAPE;
+
+export const isCtrlEnterEvent = (evt) => evt.ctrlKey && evt.keyCode === KeyCode.ENTER;
+

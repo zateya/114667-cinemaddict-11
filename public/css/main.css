@@ -695,6 +695,7 @@ button {
   width: 280px;
   font-size: 21px;
   cursor: pointer;
+  user-select: none;
 }
 .film-details__control-label:not(:first-of-type) {
   border-left: 1px solid #31353f

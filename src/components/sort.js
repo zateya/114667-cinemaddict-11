@@ -1,5 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 import {SortType, sortTypes} from '../constant.js';
+import {setActiveElement} from '../utils/common.js';
 
 const createSortItemMarkup = (sortType, isActive) => {
   const activeClass = isActive ? `sort__button--active` : ``;
@@ -32,6 +33,19 @@ export default class Sort extends AbstractComponent {
     return this._currentSortType;
   }
 
+  reset() {
+    this._currentSortType = SortType.DEFAULT;
+    this.setActiveItem(this._currentSortType);
+  }
+
+  setActiveItem(sortType) {
+    const container = this.getElement();
+    const item = container.querySelector(`[data-sort-type = ${sortType}]`);
+    const activeClass = `sort__button--active`;
+
+    setActiveElement(container, item, activeClass);
+  }
+
   setSortTypeChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
@@ -49,13 +63,8 @@ export default class Sort extends AbstractComponent {
         return;
       }
 
-      const container = target.closest(`.sort`);
-      const activeClass = `sort__button--active`;
-      const acttiveElement = container.querySelector(`.${activeClass}`);
-      acttiveElement.classList.remove(activeClass);
-      target.classList.add(activeClass);
-
       this._currentSortType = sortType;
+      this.setActiveItem(this._currentSortType);
 
       handler(this._currentSortType);
     });
