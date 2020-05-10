@@ -1,6 +1,6 @@
 import {genres} from '../constant.js';
 import {generateComments} from './comments.js';
-import {getRandomIntegerNumber, getRandomFloatNumber, getRandomArrayItem, getRandomArray, getRandomDate, generateDescription} from './utils.js';
+import {getRandomIntegerNumber, getRandomFloatNumber, getRandomArrayItem, getRandomArray, getRandomDate, generateDescription} from '../utils/random.js';
 
 const filmNames = [
   `The Dance of Life`,
@@ -75,9 +75,12 @@ const CommentsCount = {
   MAX: 5
 };
 
-const generateFilm = () => {
+const getComments = () => {
   const commentsCount = getRandomIntegerNumber(CommentsCount.MIN, CommentsCount.MAX);
+  return generateComments(commentsCount);
+};
 
+const generateFilm = () => {
   const film = {
     id: String(new Date() + Math.random()),
     title: getRandomArrayItem(filmNames),
@@ -89,16 +92,14 @@ const generateFilm = () => {
     director: getRandomArrayItem(directors),
     writers: getRandomArray(writers),
     actors: getRandomArray(actors),
-    release: {
-      date: getRandomDate(0, 10000),
-      country: getRandomArrayItem(countries),
-    },
+    release: getRandomDate(0, 10000),
+    country: getRandomArrayItem(countries),
     duration: getRandomIntegerNumber(30, 180),
     description: generateDescription(description, DescriptionSentencesCount.MIN, DescriptionSentencesCount.MAX),
     isWatchList: Math.random() > 0.5,
     isWatched: Math.random() > 0.5,
     isFavorite: Math.random() > 0.5,
-    comments: generateComments(commentsCount),
+    comments: getComments(),
   };
 
   if (film.isWatched) {

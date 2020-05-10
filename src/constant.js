@@ -1,23 +1,26 @@
 export const ALL_FILMS_COUNT = 20;
 
-export const ESCAPE_KEY_CODE = 27;
-
 export const SHORT_DESCRIPTION_LENGTH = 140;
 
 export const FILTER_HREF_PREFIX = `#`;
 
 export const POSTER_PATH = `images/posters`;
 
+export const KeyCode = {
+  ESCAPE: 27,
+  ENTER: 13
+};
+
 export const FilmsCount = {
   ON_START: 5,
   BY_BUTTON: 5,
   RATED: 2,
-  COMMENTED: 2
+  COMMENTED: 2,
 };
 
 export const ListType = {
   MAIN: `main`,
-  EXTRA: `extra`
+  EXTRA: `extra`,
 };
 
 export const FilmControllerMode = {
@@ -30,61 +33,69 @@ export const FilmsTitle = {
   NO_FILMS: `There are no movies in our database`,
   LOADING_FILMS: `Loading...`,
   RATED_FILMS: `Top rated`,
-  COMMENTED_FILMS: `Most commented`
+  COMMENTED_FILMS: `Most commented`,
+};
+
+export const FilmControlType = {
+  WATCHLIST: `watchlist`,
+  WATCHED: `watched`,
+  FAVORITE: `favorite`,
 };
 
 export const FilterType = {
   ALL: `all`,
   WATCHLIST: `watchlist`,
   HISTORY: `history`,
-  FAVORITES: `favorites`
+  FAVORITES: `favorites`,
 };
 
 export const filterNames = [
   `All Movies`,
   `Watchlist`,
   `History`,
-  `Favorites`
+  `Favorites`,
 ];
 
 export const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
   RATING: `rating`,
-  COMMENTS_COUNT: `comments`
+  COMMENTS_COUNT: `comments`,
 };
 
 export const sortTypes = [
   `default`,
   `date`,
-  `rating`
+  `rating`,
 ];
 
 export const emojiesData = {
   list: [
     {
       name: `angry`,
-      img: `angry.png`
+      img: `angry.png`,
     },
     {
       name: `puke`,
-      img: `puke.png`
+      img: `puke.png`,
     },
     {
       name: `sleeping`,
-      img: `sleeping.png`
+      img: `sleeping.png`,
     },
     {
       name: `smile`,
-      img: `smile.png`
+      img: `smile.png`,
     }
   ],
   path: `images/emoji`,
   sizes: {
     big: [55, 55],
-    small: [30, 30]
+    small: [30, 30],
   }
 };
+
+export const emojies = emojiesData.list.map((it) => it.name);
 
 export const genres = [
   `Musical`,
@@ -93,20 +104,28 @@ export const genres = [
   `Comedy`,
   `Cartoon`,
   `Mystery`,
-  `Film-Noir`
+  `Film-Noir`,
 ];
 
 export const filmControls = [
   {
     type: `watchlist`,
-    name: `Add to watchlist`
+    name: `Add to watchlist`,
   },
   {
     type: `watched`,
-    name: `Already watched`
+    name: `Already watched`,
   },
   {
     type: `favorite`,
-    name: `Add to favorites`
+    name: `Add to favorites`,
   }
+];
+
+export const users = [
+  `Tim Macoveev`,
+  `Vadim Makeev`,
+  `John Doe`,
+  `Ivan Ivanov`,
+  `Maxim Petrov`,
 ];

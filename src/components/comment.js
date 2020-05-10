@@ -2,12 +2,15 @@ import AbstractComponent from './abstract-component.js';
 import {formatCommentDate} from '../utils/common.js';
 import {createEmojiImageMarkup} from '../utils/comments.js';
 import {emojiesData} from '../constant.js';
+import {encode} from "he";
 
 const createCommentMarkup = (comment) => {
-  const {author, date, message, emoji} = comment;
+  const {author, date, message: notSanitizedMessage, emoji} = comment;
   const formatedDate = formatCommentDate(date);
 
-  const emojiImageMarkup = createEmojiImageMarkup(emoji, emojiesData.sizes.big);
+  const message = encode(notSanitizedMessage);
+
+  const emojiImageMarkup = createEmojiImageMarkup(emoji, emojiesData.sizes.big, emojiesData);
 
   return (
     `<li class="film-details__comment">

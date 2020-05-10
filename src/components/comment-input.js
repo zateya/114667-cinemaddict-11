@@ -1,15 +1,14 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {createEmojiImageMarkup} from '../utils/comments.js';
-import {emojiesData} from '../constant.js';
+import {emojies, emojiesData} from '../constant.js';
 
-const createEmojiListMarkup = (currentEmoji) => emojiesData.list.map((emoji) => {
-  const {name} = emoji;
-  const checkedValue = name === currentEmoji ? `checked` : ``;
+const createEmojiListMarkup = (currentEmoji) => emojies.map((emoji) => {
+  const checkedValue = emoji === currentEmoji ? `checked` : ``;
 
   return (
-    `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${name}" value="${name}" ${checkedValue}>
-    <label class="film-details__emoji-label" for="emoji-${name}">
-      ${createEmojiImageMarkup(emoji, emojiesData.sizes.small)}
+    `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}" ${checkedValue}>
+    <label class="film-details__emoji-label" for="emoji-${emoji}">
+      ${createEmojiImageMarkup(emoji, emojiesData.sizes.small, emojiesData)}
     </label>`
   );
 }).join(`\n`);
@@ -19,9 +18,7 @@ const getCurrentEmojiMarkup = (currentEmoji) => {
     return ``;
   }
 
-  const emoji = emojiesData.list.find((it) => it.name === currentEmoji);
-
-  return createEmojiImageMarkup(emoji, emojiesData.sizes.big);
+  return createEmojiImageMarkup(currentEmoji, emojiesData.sizes.big, emojiesData);
 };
 
 const createCommentInputTemplate = (emoji, comment) => {
@@ -45,13 +42,11 @@ const createCommentInputTemplate = (emoji, comment) => {
 };
 
 export default class CommentInput extends AbstractSmartComponent {
-  constructor(emoji, comment, onEmojiChange, onCommentInput) {
+  constructor() {
     super();
 
-    this._emoji = emoji;
-    this._comment = comment;
-    this._onEmojiChange = onEmojiChange;
-    this._onCommentInput = onCommentInput;
+    this._emoji = ``;
+    this._comment = ``;
 
     this._subscribeOnEvents();
   }
@@ -64,6 +59,12 @@ export default class CommentInput extends AbstractSmartComponent {
     return createCommentInputTemplate(this._emoji, this._comment);
   }
 
+  reset() {
+    this._emoji = ``;
+    this._comment = ``;
+    this.rerender();
+  }
+
   _subscribeOnEvents() {
     const element = this.getElement();
 
@@ -73,14 +74,11 @@ export default class CommentInput extends AbstractSmartComponent {
       }
 
       this._emoji = evt.target.value;
-      this._onEmojiChange(this._emoji);
-      this._onCommentInput(this._comment);
       this.rerender();
     });
 
     element.querySelector(`.film-details__comment-input`).addEventListener(`input`, (evt) => {
       this._comment = evt.target.value;
-      this._onCommentInput(this._comment);
     });
   }
 }

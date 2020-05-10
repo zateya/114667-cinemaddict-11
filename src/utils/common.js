@@ -1,4 +1,5 @@
 import moment from 'moment';
+import {KeyCode} from '../constant.js';
 
 export const getShortText = (text, maxLength) => {
   if (text.length > maxLength) {
@@ -12,22 +13,8 @@ export const formatDuration = (minutes) => {
   return moment.utc(moment.duration(minutes, `minutes`).as(`milliseconds`)).format(`H[h] mm[m]`);
 };
 
-const isSameDay = (date1, date2) => {
-  return moment(date1).isSame(date2, `day`);
-};
-
 export const formatCommentDate = (date) => {
-  const now = moment();
-
-  if (isSameDay(now, date)) {
-    const today = now.clone().startOf(`day`);
-    const isLessHalfDay = now.diff(today, `hours`) < 12;
-    return isLessHalfDay ? moment(date).format(`YYYY/MM/DD HH:mm`) : `Today`;
-  }
-
-  const yesterday = now.clone().subtract(1, `days`).startOf(`day`);
-
-  return isSameDay(yesterday, date) ? `Yesterday` : moment(date).fromNow();
+  return moment(date).format(`YYYY/MM/DD HH:mm`);
 };
 
 export const formateDate = (date) => {
@@ -50,3 +37,8 @@ export const setActiveElement = (container, element, activeClass) => {
     element.classList.add(activeClass);
   }
 };
+
+export const isEscEvent = (evt) => evt.keyCode === KeyCode.ESCAPE;
+
+export const isCtrlEnterEvent = (evt) => evt.ctrlKey && evt.keyCode === KeyCode.ENTER;
+

@@ -1,6 +1,7 @@
 import AbstractComponent from "./abstract-component.js";
-import {POSTER_PATH, filmControls} from '../constant.js';
-import {formatDuration, formateDate} from '../utils/common.js';
+import {formatDuration, formateDate, isCtrlEnterEvent} from '../utils/common.js';
+import {getRandomArrayItem} from '../utils/random.js';
+import {POSTER_PATH, filmControls, users} from '../constant.js';
 
 const createGenresMarkup = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(`\n`);
 
@@ -38,7 +39,7 @@ const createControlsMarkup = (...params) => {
 };
 
 const createFilmDetailsTemplate = (film) => {
-  const {title, originalTitle, poster, genres, rating, ageRating, director, writers, actors, release: {date, country}, duration, description, isWatchList, isWatched, isFavorite} = film;
+  const {title, originalTitle, poster, genres, rating, ageRating, director, writers, actors, date, country, duration, description, isWatchList, isWatched, isFavorite} = film;
 
   const releaseDate = formateDate(date);
 
@@ -96,6 +97,16 @@ const createFilmDetailsTemplate = (film) => {
   );
 };
 
+const parseFormData = (formData) => {
+  return {
+    id: String(new Date() + Math.random()),
+    author: getRandomArrayItem(users),
+    date: new Date(),
+    message: formData.get(`comment`),
+    emoji: formData.get(`comment-emoji`),
+  };
+};
+
 export default class FilmDetails extends AbstractComponent {
   constructor(film) {
     super();
@@ -107,6 +118,23 @@ export default class FilmDetails extends AbstractComponent {
     return createFilmDetailsTemplate(this._film);
   }
 
+  getData() {
+    const form = this.getElement().querySelector(`.film-details__inner`);
+    const formData = new FormData(form);
+
+    return parseFormData(formData);
+  }
+
+  setSubmitHandler(handler) {
+    const form = this.getElement().querySelector(`.film-details__inner`);
+
+    form.addEventListener(`keydown`, (evt) => {
+      if (isCtrlEnterEvent(evt)) {
+        handler();
+      }
+    });
+  }
+
   getFormElement() {
     return this.getElement().querySelector(`form`);
   }
@@ -115,15 +143,7 @@ export default class FilmDetails extends AbstractComponent {
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
   }
 
-  setWatchListInputChangeHandler(handler) {
-    this.getElement().querySelector(`#watchlist`).addEventListener(`change`, handler);
-  }
-
-  setWatchedInputChangeHandler(handler) {
-    this.getElement().querySelector(`#watched`).addEventListener(`change`, handler);
-  }
-
-  setFavoriteInputChangeHandler(handler) {
-    this.getElement().querySelector(`#favorite`).addEventListener(`change`, handler);
+  setControlInputsChangeHadler(handler) {
+    this.getElement().querySelector(`.film-details__controls`).addEventListener(`change`, handler);
   }
 }

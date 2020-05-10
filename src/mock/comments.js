@@ -1,12 +1,6 @@
 
-import {getRandomArrayItem, getRandomDate} from './utils.js';
-import {emojiesData} from '../constant.js';
-
-const authors = [
-  `Tim Macoveev`,
-  `Vadim Makeev`,
-  `John Doe`
-];
+import {getRandomArrayItem, getRandomDate} from '../utils/random.js';
+import {emojies, users} from '../constant.js';
 
 const messages = [
   `Interesting setting and a good cast`,
@@ -19,10 +13,10 @@ const messages = [
 const getComment = () => {
   return {
     id: String(new Date() + Math.random()),
-    author: getRandomArrayItem(authors),
+    author: getRandomArrayItem(users),
     date: getRandomDate(0, 10),
     message: getRandomArrayItem(messages),
-    emoji: getRandomArrayItem(emojiesData.list),
+    emoji: getRandomArrayItem(emojies),
   };
 };
 

@@ -1,4 +1,4 @@
-export default class Comment {
+export default class Comments {
   constructor() {
     this._comments = [];
 
@@ -29,6 +29,7 @@ export default class Comment {
 
   addComment(comment) {
     this._comments = [].concat(comment, this._comments);
+    this._callHandlers(this._dataChangeHandlers);
   }
 
   setDataChangeHandler(handler) {

@@ -3,7 +3,7 @@ import FilmsListComponent from '../components/films-list.js';
 import NoFilmsComponent from '../components/no-films.js';
 import FilmController from './film.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
-import {render, remove} from '../utils/render.js';
+import {render, remove, RenderPosition} from '../utils/render.js';
 import {FilmsCount, FilmsTitle, ListType, SortType} from '../constant.js';
 
 const renderFilms = (filmsContainerElement, films, onDataChange, onViewChange) => {
@@ -22,7 +22,7 @@ const getSortedFilms = (films, sortType, from, to) => {
 
   switch (sortType) {
     case SortType.DATE:
-      sortedFilms = showingFilms.sort((a, b) => b.release.date - a.release.date);
+      sortedFilms = showingFilms.sort((a, b) => b.release - a.release);
       break;
     case SortType.RATING:
       sortedFilms = showingFilms.sort((a, b) => b.rating - a.rating);
@@ -46,7 +46,7 @@ export default class PageController {
     this._showingFilmsCount = FilmsCount.ON_START;
     this._showedFilmsControllers = [];
     this._ratedFilmsControllers = [];
-    this._commentedFilmsontrollers = [];
+    this._commentedFilmsControllers = [];
 
     this._filmsListComponent = new FilmsListComponent(FilmsTitle.ALL_FILMS, {isTitleHidden: true});
     this._ratedListComponent = new FilmsListComponent(FilmsTitle.RATED_FILMS, {type: ListType.EXTRA});
@@ -73,8 +73,7 @@ export default class PageController {
   render() {
     const container = this._container;
 
-    const mainElement = container.parentElement;
-    mainElement.insertBefore(this._sortComponent.getElement(), container);
+    render(container, this._sortComponent, RenderPosition.BEFOREBEGIN);
 
     const films = this._filmsModel.getFilms();
 
@@ -157,6 +156,16 @@ export default class PageController {
     }
   }
 
+  _renderControllerNewData(controllerType, filmId, newData) {
+    const currentController = controllerType.find((controller) => controller.getFilm().id === filmId);
+
+    if (typeof currentController === `undefined`) {
+      return;
+    }
+
+    currentController.render(newData);
+  }
+
   _onDataChange(oldData, newData) {
     const isSuccess = this._filmsModel.updateFilm(oldData.id, newData);
     const controllerTypes = [this._showedFilmsControllers, this._ratedFilmsControllers, this._commentedFilmsControllers];
@@ -164,18 +173,12 @@ export default class PageController {
     if (isSuccess) {
       const id = oldData.id;
 
-      controllerTypes.forEach((type) => {
-        const currentController = type.find((controller) => controller.getFilmCardComponent().getFilm().id === id);
-
-        if (typeof currentController !== `undefined`) {
-          currentController.render(newData);
-        }
-      });
+      controllerTypes.forEach((type) => this._renderControllerNewData(type, id, newData));
     }
   }
 
   _onViewChange() {
-    const controllers = [...this._showedFilmsControllers, ...this._ratedFilmsControllers, ...this._commentedFilmsControllers];
+    const controllers = this._showedFilmsControllers.concat(this._ratedFilmsControllers, this._commentedFilmsControllers);
 
     controllers.forEach((controller) => controller.setDefaultView());
   }
@@ -193,6 +196,6 @@ export default class PageController {
   _onFilterClick() {
     this._showingFilmsCount = FilmsCount.ON_START;
     this._sortComponent.reset();
-    this._updateFilms(FilmsCount.ON_START);
+    this._updateFilms(this._showingFilmsCount);
   }
 }
