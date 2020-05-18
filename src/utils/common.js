@@ -40,5 +40,5 @@ export const setActiveElement = (container, element, activeClass) => {
 
 export const isEscEvent = (evt) => evt.keyCode === KeyCode.ESCAPE;
 
-export const isCtrlEnterEvent = (evt) => evt.ctrlKey && evt.keyCode === KeyCode.ENTER;
+export const isCtrlEnterEvent = (evt) => (evt.ctrlKey || evt.metaKey) && evt.keyCode === KeyCode.ENTER;
 

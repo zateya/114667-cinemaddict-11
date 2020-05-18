@@ -48,6 +48,10 @@ export default class FilterController {
     this._activeFilterType = filterType;
   }
 
+  setActiveItem(filterType) {
+    this._filterComponent.setActiveItem(filterType);
+  }
+
   _onDataChange() {
     this.render();
   }

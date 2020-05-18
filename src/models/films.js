@@ -18,6 +18,33 @@ export default class Films {
     return this._films;
   }
 
+  getWatchedFilms() {
+    return this._films.filter((film) => film.isWatched);
+  }
+
+  setRank() {
+    const watchedFilmsCount = this.getWatchedFilms().length;
+
+    const rankToCondition = [
+      [`novice`, watchedFilmsCount >= 1 && watchedFilmsCount <= 10],
+      [`fan`, watchedFilmsCount >= 11 && watchedFilmsCount <= 20],
+      [`buff`, watchedFilmsCount >= 21],
+    ];
+
+    for (const [rank, condition] of rankToCondition) {
+      if (condition) {
+        this._rank = rank;
+        return;
+      }
+    }
+
+    this._rank = ``;
+  }
+
+  getRank() {
+    return this._rank;
+  }
+
   setFilms(films) {
     this._films = Array.from(films);
     this._callHandlers(this._dataChangeHandlers);
@@ -44,10 +71,6 @@ export default class Films {
   setFilter(filterType) {
     this._activeFilterType = filterType;
     this._callHandlers(this._filterClickHandlers);
-  }
-
-  resetFilter() {
-    this._activeFilterType = FilterType.ALL;
   }
 
   setFilterClickHandler(handler) {
