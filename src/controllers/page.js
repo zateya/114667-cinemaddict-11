@@ -4,7 +4,7 @@ import NoFilmsComponent from '../components/no-films.js';
 import FilmController from './film.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
 import {render, remove, RenderPosition} from '../utils/render.js';
-import {FilmsCount, FilmsTitle, ListType, SortType} from '../constant.js';
+import {FilmsCount, FilmsTitle, ListType, SortType, FilterType} from '../constant.js';
 
 const renderFilms = (filmsContainerElement, films, onDataChange, onViewChange) => {
   return films.map((film) => {
@@ -70,8 +70,19 @@ export default class PageController {
     this._filmsModel.setFilterClickHandler(this._onFilterClick);
   }
 
+  hide() {
+    this._container.hide();
+    this._sortComponent.hide();
+    this._reset();
+  }
+
+  show() {
+    this._container.show();
+    this._sortComponent.show();
+  }
+
   render() {
-    const container = this._container;
+    const container = this._container.getElement();
 
     render(container, this._sortComponent, RenderPosition.BEFOREBEGIN);
 
@@ -103,7 +114,7 @@ export default class PageController {
   }
 
   _renderFilmsList(component, films) {
-    render(this._container, component);
+    render(this._container.getElement(), component);
 
     const filmsListContainer = component.getContainer();
 
@@ -197,5 +208,10 @@ export default class PageController {
     this._showingFilmsCount = FilmsCount.ON_START;
     this._sortComponent.reset();
     this._updateFilms(this._showingFilmsCount);
+  }
+
+  _reset() {
+    this._filmsModel.setFilter(FilterType.ALL);
+    this._sortComponent.reset();
   }
 }

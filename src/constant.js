@@ -2,9 +2,13 @@ export const ALL_FILMS_COUNT = 20;
 
 export const SHORT_DESCRIPTION_LENGTH = 140;
 
-export const FILTER_HREF_PREFIX = `#`;
+export const HREF_ID_PREFIX = `#`;
 
 export const POSTER_PATH = `images/posters`;
+
+export const HIDDEN_CLASS = `visually-hidden`;
+
+export const STATISTIC_BAR_HEIGHT = 50;
 
 export const KeyCode = {
   ESCAPE: 27,
@@ -48,7 +52,6 @@ export const FilterType = {
   HISTORY: `history`,
   FAVORITES: `favorites`,
 };
-
 export const filterNames = [
   `All Movies`,
   `Watchlist`,
@@ -128,4 +131,39 @@ export const users = [
   `John Doe`,
   `Ivan Ivanov`,
   `Maxim Petrov`,
+];
+
+export const MenuType = {
+  STATISTIC: `stats`,
+};
+
+export const StatisticPeriod = {
+  ALL_TIME: `all-time`,
+  TODAY: `today`,
+  WEEK: `week`,
+  MONTH: `month`,
+  YEAR: `year`,
+};
+
+export const statisticFilters = [
+  {
+    name: `All time`,
+    value: `all-time`,
+  },
+  {
+    name: `Today`,
+    value: `today`,
+  },
+  {
+    name: `Week`,
+    value: `week`,
+  },
+  {
+    name: `Month`,
+    value: `month`,
+  },
+  {
+    name: `Year`,
+    value: `year`,
+  },
 ];

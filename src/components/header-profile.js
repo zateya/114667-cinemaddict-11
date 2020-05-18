@@ -1,16 +1,26 @@
 import AbstractComponent from './abstract-component.js';
 
-const createHeaderProfileTemplate = () => {
+const createHeaderProfileTemplate = (rank) => {
+  if (rank === ``) {
+    return ``;
+  }
+
   return (
     `<section class="header__profile profile">
-      <p class="profile__rating">Movie Buff</p>
+      ${rank}
       <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
     </section>`
   );
 };
 
 export default class HeaderProfile extends AbstractComponent {
+  constructor(rank) {
+    super();
+
+    this._rank = rank;
+  }
+
   getTemplate() {
-    return createHeaderProfileTemplate();
+    return createHeaderProfileTemplate(this._rank);
   }
 }

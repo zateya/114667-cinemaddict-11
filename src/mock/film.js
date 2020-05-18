@@ -103,7 +103,7 @@ const generateFilm = () => {
   };
 
   if (film.isWatched) {
-    film.watchingDate = getRandomDate(0, 365);
+    film.watchingDate = getRandomDate(0, 90);
   }
 
   return film;
