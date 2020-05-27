@@ -195,6 +195,10 @@ export default class Statistic extends AbstractSmartComponent {
     this._subscribeOnEvents();
   }
 
+  getChart() {
+    return this._statisticsChart;
+  }
+
   reset() {
     const allTimePeriod = StatisticPeriod.ALL_TIME;
     this.rerender(this._filmsModel.getWatchedFilms(), allTimePeriod);
@@ -204,6 +208,7 @@ export default class Statistic extends AbstractSmartComponent {
   rerender(films, period) {
     this._films = films;
     this._period = period;
+    this._rank = this._filmsModel.getRank();
     this._genreSatistics = getGenreSatistics(this._films, this._period);
 
     super.rerender();

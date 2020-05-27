@@ -27,8 +27,8 @@ export default class CommentsController {
   render() {
     const container = this._container;
 
-    render(container, this._commentsTitleComponent);
-    render(container, this._commentListComponent);
+    render(container, this._commentListComponent, RenderPosition.AFTERBEGIN);
+    render(container, this._commentsTitleComponent, RenderPosition.AFTERBEGIN);
 
     this._renderComments();
   }
@@ -41,7 +41,8 @@ export default class CommentsController {
   _renderComments() {
     this._removeComments();
     const commentsListElement = this._commentListComponent.getElement();
-    this._commentsControllers = renderComments(commentsListElement, this._commentsModel.getComments(), this._onDataChange);
+    const sortedComments = this._commentsModel.getComments().slice().sort((a, b) => b.date - a.date);
+    this._commentsControllers = renderComments(commentsListElement, sortedComments, this._onDataChange);
     this._showingCommentsCount = this._commentsControllers.length;
   }
 

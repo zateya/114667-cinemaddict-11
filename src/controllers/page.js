@@ -5,10 +5,11 @@ import FilmController from './film.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
 import {render, remove, RenderPosition} from '../utils/render.js';
 import {FilmsCount, FilmsTitle, ListType, SortType, FilterType} from '../constant.js';
+import {getRandomArray} from '../utils/random.js';
 
-const renderFilms = (filmsContainerElement, films, onDataChange, onViewChange) => {
+const renderFilms = (filmsContainerElement, films, onDataChange, onViewChange, api) => {
   return films.map((film) => {
-    const filmController = new FilmController(filmsContainerElement, onDataChange, onViewChange);
+    const filmController = new FilmController(filmsContainerElement, onDataChange, onViewChange, api);
 
     filmController.render(film);
 
@@ -27,9 +28,6 @@ const getSortedFilms = (films, sortType, from, to) => {
     case SortType.RATING:
       sortedFilms = showingFilms.sort((a, b) => b.rating - a.rating);
       break;
-    case SortType.COMMENTS_COUNT:
-      sortedFilms = showingFilms.sort((a, b) => b.comments.length - a.comments.length);
-      break;
     case SortType.DEFAULT:
       sortedFilms = showingFilms;
       break;
@@ -38,11 +36,46 @@ const getSortedFilms = (films, sortType, from, to) => {
   return sortedFilms.slice(from, to);
 };
 
+const getTopRatedFilms = (films, count) => {
+  const sortedFilms = films.slice().sort((a, b) => b.rating - a.rating);
+  const firstFilmRating = sortedFilms[0].rating;
+
+  if (firstFilmRating === 0) {
+    return [];
+  }
+
+  const allTopRatedFilms = sortedFilms.filter((film) => film.rating === firstFilmRating);
+
+  if (allTopRatedFilms.length >= count) {
+    return getRandomArray(allTopRatedFilms, count);
+  }
+
+  return sortedFilms.slice(0, count);
+};
+
+const getMostCommentedFilms = (films, count) => {
+  const sortedFilms = films.slice().sort((a, b) => b.comments.length - a.comments.length);
+  const firstFilmCommentsCount = sortedFilms[0].comments.length;
+
+  if (firstFilmCommentsCount === 0) {
+    return [];
+  }
+
+  const allMostCommentedFilms = sortedFilms.filter((film) => film.comments.length === firstFilmCommentsCount);
+
+  if (allMostCommentedFilms.length >= count) {
+    return getRandomArray(allMostCommentedFilms, count);
+  }
+
+  return sortedFilms.slice(0, count);
+};
+
 export default class PageController {
-  constructor(container, filmsModel) {
+  constructor(container, filmsModel, api) {
     this._container = container;
 
     this._filmsModel = filmsModel;
+    this._api = api;
     this._showingFilmsCount = FilmsCount.ON_START;
     this._showedFilmsControllers = [];
     this._ratedFilmsControllers = [];
@@ -98,17 +131,15 @@ export default class PageController {
     this._showedFilmsControllers = this._showedFilmsControllers.concat(newFilms);
     this._renderShowMoreButton();
 
-    const isRatedFilms = films.some((it) => it.rating > 0);
+    const ratedFilms = getTopRatedFilms(films, FilmsCount.RATED);
 
-    if (isRatedFilms) {
-      const ratedFilms = getSortedFilms(films, SortType.RATING, 0, FilmsCount.RATED);
+    if (ratedFilms.length > 0) {
       this._ratedFilmsControllers = this._renderFilmsList(this._ratedListComponent, ratedFilms);
     }
 
-    const isCommentedFilms = films.some((it) => it.comments.length > 0);
+    const commentedFilms = getMostCommentedFilms(films, FilmsCount.COMMENTED);
 
-    if (isCommentedFilms) {
-      const commentedFilms = getSortedFilms(films, SortType.COMMENTS_COUNT, 0, FilmsCount.COMMENTED);
+    if (commentedFilms.length > 0) {
       this._commentedFilmsControllers = this._renderFilmsList(this._commentedListComponent, commentedFilms);
     }
   }
@@ -118,11 +149,11 @@ export default class PageController {
 
     const filmsListContainer = component.getContainer();
 
-    return renderFilms(filmsListContainer, films, this._onDataChange, this._onViewChange, this._commentsModel);
+    return renderFilms(filmsListContainer, films, this._onDataChange, this._onViewChange, this._api);
   }
 
   _renderFilms(films) {
-    const newFilms = renderFilms(this._filmsListContainer, films, this._onDataChange, this._onViewChange, this._commentsModel);
+    const newFilms = renderFilms(this._filmsListContainer, films, this._onDataChange, this._onViewChange, this._api);
     this._showedFilmsControllers = this._showedFilmsControllers.concat(newFilms);
 
     this._showingFilmsCount = this._showedFilmsControllers.length;
@@ -159,7 +190,7 @@ export default class PageController {
     this._showingFilmsCount += FilmsCount.BY_BUTTON;
 
     const sortedFilms = getSortedFilms(films, this._sortComponent.getSortType(), prevFilmsCount, this._showingFilmsCount);
-    const newFilms = renderFilms(this._filmsListContainer, sortedFilms, this._onDataChange, this._onViewChange, this._commentsModel);
+    const newFilms = renderFilms(this._filmsListContainer, sortedFilms, this._onDataChange, this._onViewChange, this._api);
     this._showedFilmsControllers = this._showedFilmsControllers.concat(newFilms);
 
     if (this._showingFilmsCount >= films.length) {
@@ -167,25 +198,28 @@ export default class PageController {
     }
   }
 
-  _renderControllerNewData(controllerType, filmId, newData) {
-    const currentController = controllerType.find((controller) => controller.getFilm().id === filmId);
+  _renderControllerNewData(controllerType, filmId, filmModel) {
+    const currentController = controllerType.find((controller) => controller.getId() === filmId);
 
     if (typeof currentController === `undefined`) {
       return;
     }
 
-    currentController.render(newData);
+    currentController.render(filmModel);
   }
 
   _onDataChange(oldData, newData) {
-    const isSuccess = this._filmsModel.updateFilm(oldData.id, newData);
     const controllerTypes = [this._showedFilmsControllers, this._ratedFilmsControllers, this._commentedFilmsControllers];
 
-    if (isSuccess) {
-      const id = oldData.id;
+    this._api.updateFilm(oldData.id, newData)
+      .then((filmModel) => {
+        const isSuccess = this._filmsModel.updateFilm(oldData.id, filmModel);
 
-      controllerTypes.forEach((type) => this._renderControllerNewData(type, id, newData));
-    }
+        if (isSuccess) {
+          controllerTypes.forEach((type) => this._renderControllerNewData(type, oldData.id, filmModel));
+          this._updateFilms(this._showingFilmsCount);
+        }
+      });
   }
 
   _onViewChange() {

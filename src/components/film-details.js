@@ -1,20 +1,32 @@
 import AbstractComponent from "./abstract-component.js";
 import {formatDuration, formateDate, isCtrlEnterEvent} from '../utils/common.js';
-import {getRandomArrayItem} from '../utils/random.js';
-import {POSTER_PATH, filmControls, users} from '../constant.js';
+import {filmControls} from '../constant.js';
 
-const createGenresMarkup = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(`\n`);
+const createGenresMarkup = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre.trim()}</span>`).join(`\n`);
+
+const createDetailMarkup = ([key, value]) => {
+  if (value.length === 0) {
+    return ``;
+  }
+
+  return (
+    `<tr class="film-details__row">
+      <td class="film-details__term">${key}</td>
+      <td class="film-details__cell">${value}</td>
+    </tr>`
+  );
+};
 
 const createDetailsMarkup = (details) => {
+  const detailsMarkup = details.map((detail) => createDetailMarkup(detail)).join(`\n`);
+
+  if (detailsMarkup.length === 0) {
+    return ``;
+  }
 
   return (
     `<table class="film-details__table">
-      ${details.map(([key, value]) => (
-      `<tr class="film-details__row">
-        <td class="film-details__term">${key}</td>
-        <td class="film-details__cell">${value}</td>
-      </tr>`
-    )).join(`\n`)}
+      ${detailsMarkup}
     </table>`
   );
 };
@@ -39,19 +51,21 @@ const createControlsMarkup = (...params) => {
 };
 
 const createFilmDetailsTemplate = (film) => {
-  const {title, originalTitle, poster, genres, rating, ageRating, director, writers, actors, date, country, duration, description, isWatchList, isWatched, isFavorite} = film;
+  const {title, originalTitle, poster, genres, rating, ageRating, director, writers, actors, release, country, duration, description, isWatchList, isWatched, isFavorite} = film;
 
-  const releaseDate = formateDate(date);
+  const genresTitle = genres.length > 1 ? `Genres` : `Genre`;
 
   const details = [
-    [`Director`, director],
-    [`Writers`, writers.join(`, `)],
-    [`Actors`, actors.join(`, `)],
-    [`Release Date`, releaseDate],
+    [`Director`, director.trim()],
+    [`Writers`, writers.map((writer) => writer.trim()).join(`, `)],
+    [`Actors`, actors.map((actor) => actor.trim()).join(`, `)],
+    [`Release Date`, formateDate(release)],
     [`Runtime`, formatDuration(duration)],
-    [`Country`, country],
-    [`Genres`, createGenresMarkup(genres)]
+    [`Country`, country.trim()],
+    [genresTitle, createGenresMarkup(genres)]
   ];
+
+  const detailsMarkup = createDetailsMarkup(details);
 
   const controlsMarkup = createControlsMarkup(isWatchList, isWatched, isFavorite);
 
@@ -64,9 +78,9 @@ const createFilmDetailsTemplate = (film) => {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="./${POSTER_PATH}/${poster}" alt="">
+              <img class="film-details__poster-img" src="/${poster}" alt="">
 
-              <p class="film-details__age">${ageRating}</p>
+              <p class="film-details__age">${ageRating}+</p>
             </div>
 
             <div class="film-details__info">
@@ -81,7 +95,7 @@ const createFilmDetailsTemplate = (film) => {
                 </div>
               </div>
 
-              ${createDetailsMarkup(details)}
+              ${detailsMarkup}
 
               <p class="film-details__film-description">
                 ${description}
@@ -97,16 +111,6 @@ const createFilmDetailsTemplate = (film) => {
   );
 };
 
-const parseFormData = (formData) => {
-  return {
-    id: String(new Date() + Math.random()),
-    author: getRandomArrayItem(users),
-    date: new Date(),
-    message: formData.get(`comment`),
-    emoji: formData.get(`comment-emoji`),
-  };
-};
-
 export default class FilmDetails extends AbstractComponent {
   constructor(film) {
     super();
@@ -120,9 +124,8 @@ export default class FilmDetails extends AbstractComponent {
 
   getData() {
     const form = this.getElement().querySelector(`.film-details__inner`);
-    const formData = new FormData(form);
 
-    return parseFormData(formData);
+    return new FormData(form);
   }
 
   setSubmitHandler(handler) {
