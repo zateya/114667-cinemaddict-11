@@ -32,6 +32,10 @@ export default class Comments {
     this._callHandlers(this._dataChangeHandlers);
   }
 
+  getIds() {
+    return this._comments.map((comment) => comment.id);
+  }
+
   setDataChangeHandler(handler) {
     this._dataChangeHandlers.push(handler);
   }

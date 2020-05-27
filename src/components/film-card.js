@@ -1,16 +1,16 @@
 import AbstractComponent from './abstract-component.js';
-import {SHORT_DESCRIPTION_LENGTH, POSTER_PATH} from '../constant.js';
+import {SHORT_DESCRIPTION_LENGTH} from '../constant.js';
 import {getShortText, formatDuration, getFullYear} from '../utils/common.js';
 
 const createFilmCardTemplate = (film) => {
-  const {title, poster, genres, rating, description, release: {date}, duration, isWatchList, isWatched, isFavorite, comments} = film;
+  const {title, poster, genres, rating, description, release, duration, isWatchList, isWatched, isFavorite, comments} = film;
 
   const shortDescription = getShortText(description, SHORT_DESCRIPTION_LENGTH);
   const isWatchListClass = isWatchList ? `film-card__controls-item--active` : ``;
   const isWatchedClass = isWatched ? `film-card__controls-item--active` : ``;
   const isFavoriteClass = isFavorite ? `film-card__controls-item--active` : ``;
   const commentsCount = comments.length;
-  const releaseYear = getFullYear(date);
+  const releaseYear = getFullYear(release);
   const formatedDuration = formatDuration(duration);
 
   return (
@@ -20,9 +20,9 @@ const createFilmCardTemplate = (film) => {
       <p class="film-card__info">
         <span class="film-card__year">${releaseYear}</span>
         <span class="film-card__duration">${formatedDuration}</span>
-        <span class="film-card__genre">${genres[0]}</span>
+        ${genres.length > 0 ? `<span class="film-card__genre">${genres[0]}</span>` : ``}
       </p>
-      <img src="./${POSTER_PATH}/${poster}" alt="" class="film-card__poster">
+      <img src="/${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${shortDescription}</p>
       <a class="film-card__comments">${commentsCount} ${commentsCount === 1 ? `comment` : `comments`}</a>
       <form class="film-card__controls">

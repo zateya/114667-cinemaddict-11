@@ -4,7 +4,3 @@ export const createEmojiImageMarkup = (emoji, size, emojiesData) => {
 
   return `<img src="./${emojiesData.path}/${img}" width="${width}" height="${height}" alt="emoji-${emoji}">`;
 };
-
-export const getCommentsByIds = (ids, comments) => {
-  return comments.filter((comment) => ids.includes(comment.id));
-};

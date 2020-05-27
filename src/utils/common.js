@@ -3,7 +3,7 @@ import {KeyCode} from '../constant.js';
 
 export const getShortText = (text, maxLength) => {
   if (text.length > maxLength) {
-    return text.slice(0, maxLength).trim() + `…`;
+    return text.trim().slice(0, maxLength - 1) + `…`;
   }
 
   return text;

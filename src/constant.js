@@ -1,19 +1,25 @@
-export const ALL_FILMS_COUNT = 20;
+export const AUTHORIZATION = `Basic ol1Ho2981122+erq-po=`;
+export const END_POINT = `https://11.ecmascript.pages.academy/cinemaddict`;
 
-export const SHORT_DESCRIPTION_LENGTH = 140;
-
-export const HREF_ID_PREFIX = `#`;
-
-export const POSTER_PATH = `images/posters`;
-
-export const HIDDEN_CLASS = `visually-hidden`;
-
-export const STATISTIC_BAR_HEIGHT = 50;
+export const Method = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`,
+};
 
 export const KeyCode = {
   ESCAPE: 27,
   ENTER: 13
 };
+
+export const SHORT_DESCRIPTION_LENGTH = 140;
+
+export const HREF_ID_PREFIX = `#`;
+
+export const HIDDEN_CLASS = `visually-hidden`;
+
+export const STATISTIC_BAR_HEIGHT = 50;
 
 export const FilmsCount = {
   ON_START: 5,
@@ -63,14 +69,9 @@ export const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
   RATING: `rating`,
-  COMMENTS_COUNT: `comments`,
 };
 
-export const sortTypes = [
-  `default`,
-  `date`,
-  `rating`,
-];
+export const sortTypes = Object.values(SortType);
 
 export const emojiesData = {
   list: [
@@ -99,16 +100,6 @@ export const emojiesData = {
 };
 
 export const emojies = emojiesData.list.map((it) => it.name);
-
-export const genres = [
-  `Musical`,
-  `Western`,
-  `Drama`,
-  `Comedy`,
-  `Cartoon`,
-  `Mystery`,
-  `Film-Noir`,
-];
 
 export const filmControls = [
   {

@@ -8,34 +8,16 @@ export const getRandomArrayItem = (array) => {
   return array[randomIndex];
 };
 
-export const getRandomFloatNumber = (min, max) => {
-  return min + Math.random() * (max - min);
-};
+export const getRandomArray = (array, length) => {
+  const randomArray = [];
 
-export const getRandomArray = (array) => {
-  const count = getRandomIntegerNumber(1, array.length - 1);
+  while (randomArray.length < length) {
+    const item = getRandomArrayItem(array);
 
-  const randomArray = new Array(count)
-    .fill(``)
-    .map(() => getRandomArrayItem(array));
+    if (!randomArray.includes(item)) {
+      randomArray.push(item);
+    }
+  }
 
-  return Array.from(new Set(randomArray));
-};
-
-export const getRandomDate = (minDiff, maxDiff) => {
-  const targetDate = new Date();
-  const diffValue = getRandomIntegerNumber(minDiff, maxDiff);
-  targetDate.setDate(targetDate.getDate() - diffValue);
-
-  return targetDate;
-};
-
-export const generateDescription = (text, minSentencesCount, maxSentencesCount) => {
-  const sentences = text.split(`. `);
-  const sentencesCount = getRandomIntegerNumber(minSentencesCount, maxSentencesCount);
-
-  return new Array(sentencesCount)
-    .fill(``)
-    .map(() => `${getRandomArrayItem(sentences)}.`)
-    .join(` `);
+  return randomArray;
 };
